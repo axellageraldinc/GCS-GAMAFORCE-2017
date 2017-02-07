@@ -202,7 +202,7 @@ namespace GCS_WPF_2
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::                  Jika button REFRESH di klik                   :::
+        //::                  Jika button REFRESH di klik                   ::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
