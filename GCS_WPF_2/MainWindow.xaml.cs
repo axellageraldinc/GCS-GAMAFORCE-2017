@@ -63,6 +63,9 @@ namespace GCS_WPF_2
 
         }
 
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::              Cek apakah folder FlightRecord udh ada            :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         public void CheckFolderFlightRecord()
         {
             string pathFlightRecord = Environment.CurrentDirectory + @"\FlightRecord\";
@@ -118,14 +121,15 @@ namespace GCS_WPF_2
                 string lat = string.Format("{0:0.000000}", Latitude);
                 portGCS.Write(lat + ":");
                 string lng = string.Format("{0:0.000000}", Longitude);
-                portGCS.Write(lng);
+                portGCS.Write(lng + ":");
+                label_Test.Content = lat + "," + lng;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
-
+        
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::             Timer utk sinkronisasi transmisi data              :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -207,7 +211,6 @@ namespace GCS_WPF_2
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                Zoom level berubah sesuai slider                :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
         private void slider_zoom_map_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             myMap.ZoomLevel = Convert.ToInt32(e.NewValue);
@@ -267,6 +270,8 @@ namespace GCS_WPF_2
             try
             {
                 portGCS.Close(); //close the serial port
+                myMap.Children.Clear();
+                myMap.ZoomLevel = 1;
             }
 
             catch (Exception ex)
@@ -451,14 +456,12 @@ namespace GCS_WPF_2
                 string LngAkhir = db.GetLng("GCS_DB_" + dbTarget, idAkhir);
                 Pushpin pinAwal = new Pushpin();
                 Pushpin pinAkhir = new Pushpin();
-                MessageBox.Show(LatAwal + "," + LngAwal);
-                MessageBox.Show(LatAkhir + "," + LngAkhir);
                 Location locAwal = new Location(Convert.ToDouble(LatAwal), Convert.ToDouble(LngAwal));
                 pinAwal.Location = locAwal;
                 ToolTipService.SetToolTip(pinAwal, "START");
                 Location locAkhir = new Location(Convert.ToDouble(LatAkhir), Convert.ToDouble(LngAkhir));
                 pinAkhir.Location = locAkhir;
-                ToolTipService.SetToolTip(pinAwal, "STOP");
+                ToolTipService.SetToolTip(pinAkhir, "FINISH");
                 myMap.Children.Add(pinAwal);
                 myMap.Children.Add(pinAkhir);
                 myMap.ZoomLevel = zoom;
