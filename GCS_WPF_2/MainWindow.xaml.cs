@@ -46,6 +46,7 @@ namespace GCS_WPF_2
         public MainWindow()
         {
             InitializeComponent();
+            CheckFolderFlightRecord();
             batt_icon.Visibility = Visibility.Visible;
             batt_icon_warning.Visibility = Visibility.Hidden;
             batt_icon_low.Visibility = Visibility.Hidden;
@@ -60,6 +61,15 @@ namespace GCS_WPF_2
             slider_zoom_map.Visibility = Visibility.Hidden;
             PortBaudSetting();
 
+        }
+
+        public void CheckFolderFlightRecord()
+        {
+            string pathFlightRecord = Environment.CurrentDirectory + @"\FlightRecord\";
+            if (!Directory.Exists(pathFlightRecord))
+            {
+                Directory.CreateDirectory(pathFlightRecord);
+            }
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -208,8 +218,8 @@ namespace GCS_WPF_2
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            RefreshUI();
-            PortBaudSetting();
+            //RefreshUI();
+            //PortBaudSetting();
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
