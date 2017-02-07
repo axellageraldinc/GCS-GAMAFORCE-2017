@@ -584,7 +584,7 @@ namespace GCS_WPF_2
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::                   Hitung jarak metode 1                        ::
+        //::                   Hitung jarak metode 1                        :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         private double distance(double lat1, double lon1, double lat2, double lon2)
         {
