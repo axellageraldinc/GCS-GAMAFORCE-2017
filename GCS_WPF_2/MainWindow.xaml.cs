@@ -57,6 +57,7 @@ namespace GCS_WPF_2
             listPolyline = new List<MapPolyline>();
             //db.OpenConnection();
             //LoadMap();
+            slider_zoom_map.Visibility = Visibility.Hidden;
             PortBaudSetting();
 
         }
@@ -69,9 +70,9 @@ namespace GCS_WPF_2
             //Pushpin pin = new Pushpin();
             //pin.Location = position;
             myMap.Center = position;
-            myMap.ZoomLevel = zoom;
+            //myMap.ZoomLevel = zoom;
             //myMap.Children.Add(pin);
-            //slider_zoom_map.Value = zoom;
+            slider_zoom_map.Value = zoom;
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -196,13 +197,14 @@ namespace GCS_WPF_2
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                Zoom level berubah sesuai slider                :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+
+        private void slider_zoom_map_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             myMap.ZoomLevel = Convert.ToInt32(e.NewValue);
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::                  Jika button REFRESH di klik                   ::
+        //::                  Jika button REFRESH di klik                   :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
@@ -220,7 +222,7 @@ namespace GCS_WPF_2
                 ConnectPortBaudAttempt();
                 btnConnect.Content = "STOP";
                 //Mulai Timer
-                TimeStart = string.Format("FlightLog-{0:dd_MMMM_yyyy HH.mm.ss}.xlsx", DateTime.Now);
+                TimeStart = string.Format("FlightLog__{0:dd_MMMM_yyyy__HH_mm_ss}", DateTime.Now);
                 start = DateTime.Now;
                 Timer();
                 TimerFlightTime();
@@ -335,7 +337,7 @@ namespace GCS_WPF_2
                     Convert.ToString(roll), Convert.ToString(Lat), Convert.ToString(Lng), time);
 
                 //Show data dari DB ke label
-                GCS_DB_MODEL model1 = db.GetDataModel();
+                GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
                 txtAlt.Content = model1.Alt;
                 txtYaw.Content = model1.Yaw;
                 txtPitch.Content = model1.Pitch;
@@ -389,8 +391,8 @@ namespace GCS_WPF_2
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         void timer_Tick(object sender, EventArgs e)
         {
-            GCS_DB_MODEL model1 = db.GetDataModel();
-            TrackRoute();
+            GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
+            TrackRoute("GCS_DB");
             TrackDroneIcon();
             position = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
             LoadMap();
@@ -429,6 +431,28 @@ namespace GCS_WPF_2
                 xlApp = new Excel.Application();
                 Excel.Workbook wb = xlApp.Workbooks.Open(Environment.CurrentDirectory + @"\FlightRecord\" + filename);
                 xlApp.Visible = true;
+                myMap.Children.Clear();
+                string dbTarget = filename.Substring(0, 37);
+                TrackRoute("GCS_DB_"+dbTarget);
+                int idAkhir = GetLastID("GCS_DB_" + dbTarget);
+                string LatAwal = db.GetLat("GCS_DB_"+dbTarget,1);
+                string LngAwal = db.GetLng("GCS_DB_" + dbTarget, 1);
+                string LatAkhir = db.GetLat("GCS_DB_" + dbTarget, idAkhir);
+                string LngAkhir = db.GetLng("GCS_DB_" + dbTarget, idAkhir);
+                Pushpin pinAwal = new Pushpin();
+                Pushpin pinAkhir = new Pushpin();
+                MessageBox.Show(LatAwal + "," + LngAwal);
+                MessageBox.Show(LatAkhir + "," + LngAkhir);
+                Location locAwal = new Location(Convert.ToDouble(LatAwal), Convert.ToDouble(LngAwal));
+                pinAwal.Location = locAwal;
+                ToolTipService.SetToolTip(pinAwal, "START");
+                Location locAkhir = new Location(Convert.ToDouble(LatAkhir), Convert.ToDouble(LngAkhir));
+                pinAkhir.Location = locAkhir;
+                ToolTipService.SetToolTip(pinAwal, "STOP");
+                myMap.Children.Add(pinAwal);
+                myMap.Children.Add(pinAkhir);
+                myMap.ZoomLevel = zoom;
+                myMap.Center = locAwal;
             }
         }
 
@@ -450,14 +474,14 @@ namespace GCS_WPF_2
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::   Polyline yang muncul, sesuai dengan koordinat yang diterima, utk ngetrack  ::
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        private void TrackRoute()
+        private void TrackRoute(string namaTabel)
         {
             MapPolyline polyline = new MapPolyline();
             polyline.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Blue);
             polyline.StrokeThickness = 5;
             polyline.Opacity = 1;
             LocationCollection locCollection = new LocationCollection();
-            List<GCS_DB_MODEL> listDBModel = db.getAllData();
+            List<GCS_DB_MODEL> listDBModel = db.getAllData(namaTabel);
             foreach (GCS_DB_MODEL item in listDBModel)
             {
                 double Lat, Lng;
@@ -496,7 +520,7 @@ namespace GCS_WPF_2
             {
                 myMap.Children.Remove(es);
             }
-            GCS_DB_MODEL model1 = db.GetDataModel();
+            GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
 
             Location pos = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
             pin.Location = pos;
@@ -550,16 +574,16 @@ namespace GCS_WPF_2
             image.Opacity = 1;
             image.Stretch = System.Windows.Media.Stretch.Fill;
 
-            GCS_DB_MODEL model1 = db.GetDataModel();
+            GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
             //The map location to place the image at
             Location loc = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
-            int DataCount = GetLastID();
+            int DataCount = GetLastID("GCS_DB");
             if (DataCount > 1)
             {
-                double lat1 = Convert.ToDouble(db.GetLat(DataCount - 1));
-                double lat2 = Convert.ToDouble(db.GetLat(DataCount));
-                double lng1 = Convert.ToDouble(db.GetLng(DataCount - 1));
-                double lng2 = Convert.ToDouble(db.GetLng(DataCount));
+                double lat1 = Convert.ToDouble(db.GetLat("GCS_DB", DataCount - 1));
+                double lat2 = Convert.ToDouble(db.GetLat("GCS_DB", DataCount));
+                double lng1 = Convert.ToDouble(db.GetLng("GCS_DB", DataCount - 1));
+                double lng2 = Convert.ToDouble(db.GetLng("GCS_DB", DataCount));
                 double jarak = distance(lat1, lng1, lat2, lng2);
                 jarak_cetak = jarak_cetak + jarak;
                 label_jarak.Content = String.Format("{0:0.000}", jarak_cetak);
@@ -577,9 +601,9 @@ namespace GCS_WPF_2
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                     Hitung jumlah data di DB                   :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        private int GetLastID()
+        private int GetLastID(string namaTabel)
         {
-            int count = db.GetLastID();
+            int count = db.GetLastID(namaTabel);
             return count;
         }
 
@@ -671,7 +695,7 @@ namespace GCS_WPF_2
             batt_4.Visibility = Visibility.Visible;
 
             myMap.Center = position;
-            myMap.ZoomLevel = 1;
+            //myMap.ZoomLevel = 1;
             myMap.Children.Clear();
 
             txtAlt.Content = angka; altitude = Convert.ToDouble(angka);

@@ -39,9 +39,9 @@ namespace GCS_WPF_2
 
         public void InsertData(string alt, string yaw, string pitch, string roll, string lat, string lng, string time)
         {
-            string Query = "INSERT INTO GCS_DB (ALTITUDE, YAW, PITCH, ROLL, LAT, LNG, TIME) " +
-                "values ('" + alt + "','" + yaw + "','" + pitch + "','" + roll + 
-                "','" + lat + "','" + lng + "','" + time + "')";
+            //string Query = "INSERT INTO GCS_DB (ALTITUDE, YAW, PITCH, ROLL, LAT, LNG, TIME) " +
+            //    "values ('" + alt + "','" + yaw + "','" + pitch + "','" + roll + 
+            //    "','" + lat + "','" + lng + "','" + time + "')";
             SQLiteCommand create = new SQLiteCommand(conn);
                     create.CommandText = "INSERT INTO GCS_DB (ALTITUDE, YAW, PITCH, ROLL, LAT, LNG, TIME) " +
                 "values ('" + alt + "','" + yaw + "','" + pitch + "','" + roll +
@@ -74,7 +74,7 @@ namespace GCS_WPF_2
             }
         }
 
-        public int GetLastID()
+        public int GetLastID(string namaTabel)
         {
             //cmd.CommandText = "SELECT COUNT(*) FROM GCS_DB";
             //cmd.CommandType = CommandType.Text;
@@ -82,16 +82,16 @@ namespace GCS_WPF_2
 
             //RowCount = Convert.ToInt32(cmd.ExecuteScalar());
             //return RowCount;
-            string Query = "SELECT COUNT(*) FROM GCS_DB";
+            string Query = "SELECT COUNT(*) FROM "+namaTabel;
             SQLiteCommand create = new SQLiteCommand(Query, conn);
             int total = Convert.ToInt32(create.ExecuteScalar());
             return total;
         }
 
-        public string GetLat(int ID)
+        public string GetLat(string namaTabel, int ID)
         {
             string Lat="";
-            string Query = "SELECT * FROM GCS_DB WHERE ID = " + ID;
+            string Query = "SELECT * FROM "+namaTabel+" WHERE ID = " + ID;
             SQLiteCommand create = new SQLiteCommand(Query, conn);
             SQLiteDataReader sdr = create.ExecuteReader();
             while (sdr.Read())
@@ -100,10 +100,10 @@ namespace GCS_WPF_2
             }
             return Lat;
         }
-        public string GetLng(int ID)
+        public string GetLng(string namaTabel, int ID)
         {
             string Lng = "";
-            string Query = "SELECT * FROM GCS_DB WHERE ID = " + ID;
+            string Query = "SELECT * FROM "+namaTabel+" WHERE ID = " + ID;
             SQLiteCommand create = new SQLiteCommand(Query, conn);
             SQLiteDataReader sdr = create.ExecuteReader();
             while (sdr.Read())
@@ -113,9 +113,9 @@ namespace GCS_WPF_2
             return Lng;
         }
 
-        public GCS_DB_MODEL GetDataModel()
+        public GCS_DB_MODEL GetDataModel(string NamaTabel)
         {
-            string Query = "SELECT * FROM GCS_DB";
+            string Query = "SELECT * FROM "+NamaTabel;
             SQLiteCommand create = new SQLiteCommand(Query, conn);
             SQLiteDataReader sdr = create.ExecuteReader();
             while (sdr.Read())
@@ -142,10 +142,10 @@ namespace GCS_WPF_2
             cmd.ExecuteNonQuery();
         }
 
-        public List<GCS_DB_MODEL> getAllData()
+        public List<GCS_DB_MODEL> getAllData(string namaTabel)
         {
             List<GCS_DB_MODEL> listDBModel = new List<GCS_DB_MODEL>();
-            string Query = "SELECT * FROM GCS_DB";
+            string Query = "SELECT * FROM "+namaTabel;
             SQLiteCommand create = new SQLiteCommand(Query, conn);
             SQLiteDataReader sdr = create.ExecuteReader();
             while (sdr.Read())
@@ -167,6 +167,29 @@ namespace GCS_WPF_2
 
         public bool ExcelSave(string timeStart, string totalHours, string totalMin, string totalSec)
         {
+            string Query = "CREATE TABLE IF NOT EXISTS GCS_DB_"+timeStart+"(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "ALTITUDE TEXT, "
+                + "YAW TEXT, "
+                + "PITCH TEXT, "
+                + "ROLL TEXT, "
+                + "LAT TEXT, "
+                + "LNG TEXT, "
+                + "TIME TEXT)";
+            SQLiteCommand command = new SQLiteCommand(Query, conn);
+            command.ExecuteNonQuery();
+            SQLiteCommand create = new SQLiteCommand(conn);
+            create.CommandText = "INSERT INTO GCS_DB_"+timeStart+"(ID, ALTITUDE, YAW, PITCH, ROLL, LAT, LNG, TIME) " +
+                "SELECT * FROM GCS_DB";
+            create.Prepare();
+            try
+            {
+                create.ExecuteNonQuery();
+            }
+            catch (SQLiteException ex)
+            {
+                Debug.Write(ex.Message);
+            }
+
             Excel.Application xlApp;
             Excel.Workbook xlWorkBook;
             Excel.Worksheet xlWorkSheet;
@@ -212,7 +235,7 @@ namespace GCS_WPF_2
             //xlWorkBook.SaveAs("sqliteToExcel.xls", Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
             //string nama_file = string.Format("FlightLog-{0:dd_MMMM_yyyy HH:mm:ss}.xlsx", DateTime.Now);
             //Dibuat auto overwrite file yang lama
-            xlWorkBook.SaveAs(Environment.CurrentDirectory + @"\FlightRecord\"+timeStart);
+            xlWorkBook.SaveAs(Environment.CurrentDirectory + @"\FlightRecord\"+timeStart+".xlsx");
             xlWorkBook.Close();
             executed = true;
             //xlApp.Visible = true;
