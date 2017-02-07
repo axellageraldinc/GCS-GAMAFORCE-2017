@@ -187,5 +187,6 @@
         <Image x:Name="batt_2" HorizontalAlignment="Left" Height="22" Margin="1162,509,0,0" VerticalAlignment="Top" Width="64" Source="Battery Bar2.png" Stretch="Fill"/>
         <Image x:Name="batt_3" HorizontalAlignment="Left" Height="22" Margin="1162,542,0,0" VerticalAlignment="Top" Width="64" Source="Battery Bar21.png" Stretch="Fill"/>
         <Image x:Name="batt_4" HorizontalAlignment="Left" Height="23" Margin="1162,575,0,0" VerticalAlignment="Top" Width="64" Source="Battery Bar2.png" Stretch="Fill"/>
+        <Slider x:Name="slider_zoom_map" HorizontalAlignment="Left" Margin="1064,183,0,0" VerticalAlignment="Top" Height="104" Width="25" ValueChanged="slider_zoom_map_ValueChanged" Orientation="Vertical" Maximum="50"/>
     </Grid>
 </Window>
