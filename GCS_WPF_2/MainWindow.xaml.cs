@@ -21,6 +21,9 @@ using System.Diagnostics;
 using Microsoft.Maps.MapControl.WPF.Design;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Threading;
+using System.Device.Location;
+using Microsoft.Expression.Encoder.Devices;
+using WebcamControl;
 
 namespace GCS_WPF_2
 {
@@ -37,6 +40,7 @@ namespace GCS_WPF_2
         private string TimeStart;
         private DateTime start, stop;
         LocationConverter locConverter = new LocationConverter();
+        private GeoCoordinateWatcher Watcher = null;
 
         SerialPort portGCS;
         DispatcherTimer timer, timerFlight;
@@ -46,6 +50,8 @@ namespace GCS_WPF_2
         public MainWindow()
         {
             InitializeComponent();
+            ConnectingWebcam();
+            GetLaptopLocation();
             CheckFolderFlightRecord();
             batt_icon.Visibility = Visibility.Visible;
             batt_icon_warning.Visibility = Visibility.Hidden;
@@ -61,6 +67,64 @@ namespace GCS_WPF_2
             slider_zoom_map.Visibility = Visibility.Hidden;
             PortBaudSetting();
 
+        }
+
+        public void ConnectingWebcam()
+        {
+            Binding binding_1 = new Binding("SelectedValue");
+            binding_1.Source = VideoDevicesComboBox;
+            WebcamCtrl.SetBinding(Webcam.VideoDeviceProperty, binding_1);
+            WebcamCtrl.FrameRate = 30;
+            WebcamCtrl.FrameSize = new System.Drawing.Size(1280, 720);
+
+            string videoPath = @"E:\VideoClips";
+            if (!Directory.Exists(videoPath))
+            {
+                Directory.CreateDirectory(videoPath);
+            }
+            WebcamCtrl.VideoDirectory = videoPath;
+
+            // Find available a/v devices
+            var vidDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
+            VideoDevicesComboBox.ItemsSource = vidDevices;
+            VideoDevicesComboBox.SelectedIndex = 0;
+        }
+
+        public void GetLaptopLocation()
+        {
+            // Create the watcher.
+            Watcher = new GeoCoordinateWatcher();
+
+            // Catch the StatusChanged event.
+            Watcher.StatusChanged += Watcher_StatusChanged;
+
+            // Start the watcher.
+            Watcher.Start();
+        }
+        // The watcher's status has change. See if it is ready.
+        private void Watcher_StatusChanged(object sender,
+            GeoPositionStatusChangedEventArgs e)
+        {
+            if (e.Status == GeoPositionStatus.Ready)
+            {
+                // Display the latitude and longitude.
+                if (Watcher.Position.Location.IsUnknown)
+                {
+                    MessageBox.Show("Tidak bisa melacak lokasi laptop ini");
+                }
+                else
+                {
+                    GeoCoordinate location =
+                        Watcher.Position.Location;
+                    double lat = location.Latitude;
+                    double lng = location.Longitude;
+                    BoxCommand.Text = lat + "," + lng;
+                    Location deviceLoc = new Location(lat, lng);
+                    Pushpin pin = new Pushpin();
+                    pin.Location = deviceLoc;
+                    myMap.Children.Add(pin);
+                }
+            }
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -466,6 +530,31 @@ namespace GCS_WPF_2
                 myMap.Children.Add(pinAkhir);
                 myMap.ZoomLevel = zoom;
                 myMap.Center = locAwal;
+            }
+        }
+
+        private void btnConnectWebcam_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnConnectWebcam.Content.Equals("CONNECT"))
+            {
+                btnConnectWebcam.Content = "STOP";
+                try
+                {
+                    // Display webcam video
+                    WebcamCtrl.StartPreview();
+                    WebcamCtrl.StartRecording();
+                }
+                catch (Microsoft.Expression.Encoder.SystemErrorException ex)
+                {
+                    MessageBox.Show("Device is in use by another application");
+                }
+            }
+            else
+            {
+                btnConnectWebcam.Content = "CONNECT";
+                // Stop the display of webcam video.
+                WebcamCtrl.StopPreview();
+                WebcamCtrl.StopRecording();
             }
         }
 

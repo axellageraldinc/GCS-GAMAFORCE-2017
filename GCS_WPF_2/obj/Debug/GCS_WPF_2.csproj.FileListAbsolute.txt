@@ -23,3 +23,9 @@ E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\EntityFramework.
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\EntityFramework.SqlServer.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\System.Data.SQLite.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\obj\Debug\GCS_WPF_2.csproj.ResolveComReference.cache
+E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.dll
+E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\WebcamControl.dll
+E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Utilities.dll
+E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Types.dll
+E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Utilities.xml
+E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Types.xml

@@ -4,10 +4,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cam="clr-namespace:WebcamControl;assembly=WebcamControl"
         xmlns:local="clr-namespace:GCS_WPF_2"
         mc:Ignorable="d"
         Title="MainWindow" Height="720" Width="1280" WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Background="#FF2C3E50">
     <Window.Resources>
+        <DataTemplate x:Key="DevicesListTemplate">
+            <TextBlock Text="{Binding Name}"/>
+        </DataTemplate>
+        
         <ControlTemplate x:Key="btnExitStyle" TargetType="{x:Type Button}">
             <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
                 <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -136,7 +141,6 @@
         </Rectangle>
         <Rectangle Fill="#FF3993CF" HorizontalAlignment="Left" Height="32" Margin="21,124,0,0" VerticalAlignment="Top" Width="538"/>
         <Label x:Name="label_Copy6" Content="LIVE STREAMING" HorizontalAlignment="Center" Margin="22,125,1091,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="White" Width="167" Height="30"/>
-        <StackPanel HorizontalAlignment="Left" Height="243" Margin="19,156,0,0" VerticalAlignment="Top" Width="540" Background="Black"/>
         <Button x:Name="btnRefresh" Content="REFRESH" HorizontalAlignment="Left" Margin="479,68,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" Click="btnRefresh_Click" BorderThickness="1" Template="{DynamicResource btnClickStyle}"/>
         <Label x:Name="label_Copy3" Content="LATITUDE" HorizontalAlignment="Center" Margin="23,589,1175,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="14" Foreground="#FF2D3E50" Width="82"/>
         <Label x:Name="txtLat" Content="0.000000" HorizontalAlignment="Center" Margin="114,586,996,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18.667" Foreground="#FF2D3E50" Width="170"/>
@@ -188,5 +192,8 @@
         <Image x:Name="batt_3" HorizontalAlignment="Left" Height="22" Margin="1162,542,0,0" VerticalAlignment="Top" Width="64" Source="Battery Bar21.png" Stretch="Fill"/>
         <Image x:Name="batt_4" HorizontalAlignment="Left" Height="23" Margin="1162,575,0,0" VerticalAlignment="Top" Width="64" Source="Battery Bar2.png" Stretch="Fill"/>
         <Slider x:Name="slider_zoom_map" HorizontalAlignment="Left" Margin="1064,183,0,0" VerticalAlignment="Top" Height="104" Width="25" ValueChanged="slider_zoom_map_ValueChanged" Orientation="Vertical" Maximum="50"/>
+        <ComboBox x:Name="VideoDevicesComboBox" HorizontalAlignment="Left" Margin="359,129,0,0" VerticalAlignment="Top" Width="120" ItemTemplate="{StaticResource DevicesListTemplate}"/>
+        <Button x:Name="btnConnectWebcam" Content="CONNECT" HorizontalAlignment="Left" Margin="484,128,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF3993CF" BorderThickness="1" Template="{DynamicResource btnClickStyle}" Click="btnConnectWebcam_Click"/>
+        <cam:Webcam x:Name="WebcamCtrl" Margin="0,156,721,322" HorizontalAlignment="Right" VerticalAlignment="Stretch" FrameRate="30" Foreground="{x:Null}" Bitrate="30000" Width="538"/>
     </Grid>
 </Window>
