@@ -1,4 +1,4 @@
-﻿<Window x:Class="GCS_WPF_2.MainWindow"
+﻿<Window x:Name="Window" x:Class="GCS_WPF_2.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,7 +12,7 @@
         <DataTemplate x:Key="DevicesListTemplate">
             <TextBlock Text="{Binding Name}"/>
         </DataTemplate>
-        
+
         <ControlTemplate x:Key="btnExitStyle" TargetType="{x:Type Button}">
             <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
                 <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -68,9 +68,10 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="Grid">
         <!--<Grid Margin="576,156,176,74">
         </Grid>-->
+        <cam:Webcam x:Name="WebcamCtrl" Margin="0,156,721,322" HorizontalAlignment="Right" VerticalAlignment="Stretch" FrameRate="30" Bitrate="30000" Width="538"/>
         <Rectangle Fill="White" HorizontalAlignment="Left" Height="245" Margin="1124,125,0,0" VerticalAlignment="Top" Width="142">
             <Rectangle.Effect>
                 <DropShadowEffect Direction="270" BlurRadius="10" ShadowDepth="2"/>
@@ -92,7 +93,8 @@
         </Rectangle>
         <Rectangle Fill="#FF3993CF" HorizontalAlignment="Left" Height="32" Margin="19,416,0,0" VerticalAlignment="Top" Width="265"/>
         <Label x:Name="label_Copy7" Content="UAV INFO" HorizontalAlignment="Center" Margin="19,416,1109,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="White" Width="152" Height="32"/>
-        <Rectangle Fill="White" HorizontalAlignment="Left" Height="229" Margin="294,416,0,0" VerticalAlignment="Top" Width="265">
+
+        <Rectangle x:Name="rectangle_att" Fill="White" HorizontalAlignment="Left" Height="229" Margin="294,416,0,0" VerticalAlignment="Top" Width="265">
             <Rectangle.Effect>
                 <DropShadowEffect Direction="270" BlurRadius="10" ShadowDepth="2"/>
             </Rectangle.Effect>
@@ -107,7 +109,8 @@
         <Rectangle x:Name="rectangle2" Fill="#FF3993CF" HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="1280" MouseDown="rectangle2_MouseDown"/>
         <!--<Grid Margin="576,156,176,74">
         </Grid>-->
-        <m:Map x:Name="myMap" CredentialsProvider="Am8VDrB5d9PouPBAl9DJ5sMt6diIn5QfT7ddusUA3_6zYYF0je2wkgLpppszCHzD" Margin="576,0,0,75" Height="490" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="529" MouseDoubleClick="MapWithPushpins_MouseDoubleClick"/>
+        <m:Map x:Name="myMap" CredentialsProvider="Am8VDrB5d9PouPBAl9DJ5sMt6diIn5QfT7ddusUA3_6zYYF0je2wkgLpppszCHzD" Margin="576,0,0,75" Height="490" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="529" MouseDoubleClick="MapWithPushpins_MouseDoubleClick">
+        </m:Map>
         <Label x:Name="Yaw" Content="YAW" HorizontalAlignment="Center" Margin="23,476,1175,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="14" Foreground="#FFE64C66" Width="82"/>
         <Label x:Name="Pitch" Content="PITCH" HorizontalAlignment="Center" Margin="22,503,1175,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="14" Foreground="#FFE64C66" Width="83"/>
         <Label x:Name="Roll" Content="ROLL" HorizontalAlignment="Center" Margin="23,530,1174,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="14" Foreground="#FFE64C66" Width="83"/>
@@ -116,9 +119,9 @@
         <Label x:Name="txtRoll" Content="0.000000" Margin="114,528,996,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18.667" Foreground="#FFE64C66" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
         <Label x:Name="label" Content="ALTITUDE" HorizontalAlignment="Center" Margin="23,449,1175,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="14" Foreground="#FFE64C66" Width="82" Height="27"/>
         <Label x:Name="txtAlt" Content="0.000000" Margin="114,447,996,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18.667" Foreground="#FFE64C66" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
-        <Button x:Name="btnTakeOff" Content="TAKE OFF" HorizontalAlignment="Left" Margin="1159,309,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}"/>
+        <Button x:Name="btnTakeOff" Content="TAKE OFF" HorizontalAlignment="Left" Margin="1159,274,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}"/>
         <Button x:Name="btnLanding" Content="LANDING" HorizontalAlignment="Left" Margin="1159,229,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}"/>
-        <Button x:Name="btnWaypoint" Content="WAYPOINT" HorizontalAlignment="Left" Margin="1159,269,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}"/>
+        <Button x:Name="btnWaypoint" Content="WAYPOINT" HorizontalAlignment="Left" Margin="1159,316,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnWaypoint_Click"/>
         <Image x:Name="batt_icon" HorizontalAlignment="Left" Height="145" Margin="1127,458,0,0" VerticalAlignment="Top" Width="135" Source="E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS1_WPF\Resources\battery2.png" Stretch="Fill"/>
         <Label x:Name="label_Copy5" Content="PORT SETTING" HorizontalAlignment="Center" Margin="16,33,1100,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="#FF87898F" Width="164"/>
         <Label x:Name="label1" Content="PORT" HorizontalAlignment="Left" Margin="23,65,0,0" VerticalAlignment="Top" Foreground="White"/>
@@ -194,6 +197,7 @@
         <Slider x:Name="slider_zoom_map" HorizontalAlignment="Left" Margin="1064,183,0,0" VerticalAlignment="Top" Height="104" Width="25" ValueChanged="slider_zoom_map_ValueChanged" Orientation="Vertical" Maximum="50"/>
         <ComboBox x:Name="VideoDevicesComboBox" HorizontalAlignment="Left" Margin="359,129,0,0" VerticalAlignment="Top" Width="120" ItemTemplate="{StaticResource DevicesListTemplate}"/>
         <Button x:Name="btnConnectWebcam" Content="CONNECT" HorizontalAlignment="Left" Margin="484,128,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF3993CF" BorderThickness="1" Template="{DynamicResource btnClickStyle}" Click="btnConnectWebcam_Click"/>
-        <cam:Webcam x:Name="WebcamCtrl" Margin="0,156,721,322" HorizontalAlignment="Right" VerticalAlignment="Stretch" FrameRate="30" Foreground="{x:Null}" Bitrate="30000" Width="538"/>
+        <Button x:Name="btnStartWaypoint" Content="START" HorizontalAlignment="Left" Margin="1159,337,0,0" VerticalAlignment="Top" Width="34" Background="#FFE74C3C" FontFamily="Roboto" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" FontSize="8" Click="btnStartWaypoint_Click"/>
+        <Button x:Name="btnStopWaypoint" Content="STOP" HorizontalAlignment="Left" Margin="1200,337,0,0" VerticalAlignment="Top" Width="34" Background="#FFE74C3C" FontFamily="Roboto" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" FontSize="8"/>
     </Grid>
 </Window>

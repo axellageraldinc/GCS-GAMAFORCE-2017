@@ -30,7 +30,6 @@ namespace GCS_WPF_2
                 + "TIME TEXT)";
             SQLiteCommand cmd = new SQLiteCommand(Query, conn);
             cmd.ExecuteNonQuery();
-
         }
         public void OpenConnection()
         {
@@ -237,10 +236,9 @@ namespace GCS_WPF_2
             //Dibuat auto overwrite file yang lama
             xlWorkBook.SaveAs(Environment.CurrentDirectory + @"\FlightRecord\"+timeStart+".xlsx");
             xlWorkBook.Close();
-            executed = true;
             //xlApp.Visible = true;
             xlApp.Quit();
-            return executed;
+            return true;
                 //xlWorkBook.Close(true, misValue, misValue);
 
             //releaseObject(xlWorkSheet);

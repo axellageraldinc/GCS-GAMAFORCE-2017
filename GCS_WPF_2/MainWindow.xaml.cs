@@ -24,6 +24,7 @@ using System.Threading;
 using System.Device.Location;
 using Microsoft.Expression.Encoder.Devices;
 using WebcamControl;
+using System.Windows.Media.Animation;
 
 namespace GCS_WPF_2
 {
@@ -36,7 +37,7 @@ namespace GCS_WPF_2
 
         private static Location position = new Location(-7.778301, 110.374690);
         List<MapPolyline> listPolyline;
-        private static int zoom = 15, second=0, minute=0, hour=0;
+        private static int zoom = 15, second=0, minute=0, hour=0, i=1;
         private string TimeStart;
         private DateTime start, stop;
         LocationConverter locConverter = new LocationConverter();
@@ -44,12 +45,14 @@ namespace GCS_WPF_2
 
         SerialPort portGCS;
         DispatcherTimer timer, timerFlight;
+        LocationCollection locCollection;
 
         private static double altitude, yaw, pitch, roll, Lat, Lng, jarak_cetak=0, battery;
 
         public MainWindow()
         {
             InitializeComponent();
+            //InitiateAttitudeIndicator();
             ConnectingWebcam();
             GetLaptopLocation();
             CheckFolderFlightRecord();
@@ -60,13 +63,18 @@ namespace GCS_WPF_2
             //Map dibuat focus supaya bisa di double click
             myMap.Focus();
             myMap.Mode = new AerialMode(true);
-            db = new DBHelper();
+            //db = new DBHelper();
             listPolyline = new List<MapPolyline>();
             //db.OpenConnection();
             //LoadMap();
             slider_zoom_map.Visibility = Visibility.Hidden;
             PortBaudSetting();
 
+        }
+
+        public void InitiateAttitudeIndicator()
+        {
+            System.Drawing.Bitmap bitmap1 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/horizon.bmp");
         }
 
         public void ConnectingWebcam()
@@ -118,11 +126,14 @@ namespace GCS_WPF_2
                         Watcher.Position.Location;
                     double lat = location.Latitude;
                     double lng = location.Longitude;
+                    AddCustomPin("pinHome.png", lat, lng, "Lokasi GCS");
                     BoxCommand.Text = lat + "," + lng;
                     Location deviceLoc = new Location(lat, lng);
-                    Pushpin pin = new Pushpin();
-                    pin.Location = deviceLoc;
-                    myMap.Children.Add(pin);
+                    myMap.Center = deviceLoc;
+                    myMap.ZoomLevel = zoom;
+                    //Pushpin pin = new Pushpin();
+                    //pin.Location = deviceLoc;
+                    //myMap.Children.Add(pin);
                 }
             }
         }
@@ -171,10 +182,12 @@ namespace GCS_WPF_2
             Pushpin pin = new Pushpin();
             pin.Location = pinLocation;
             // Adds the pushpin to the map.
-            myMap.Children.Add(pin);
+            //myMap.Children.Add(pin);
             //Ambil latitude dan longitude dari pushpin
             double Latitude = pin.Location.Latitude;
             double Longitude = pin.Location.Longitude;
+            AddCustomPin("pin.png", Latitude, Longitude, "Point ke-"+i);
+            i++;
             //BoxTestSerial.Text = (string.Format("{0:0.000000}", Latitude) + "," + string.Format("{0:0.000000}", Longitude));
             //Kirim latitude dan longitude ke controller
             try
@@ -182,11 +195,15 @@ namespace GCS_WPF_2
                 //int x = 1;
                 //byte[] b = BitConverter.GetBytes(x);
                 //portGCS.Write(b, 0, 4);
+                //portGCS.Write("SEMPAK:");
+                //portGCS.Write("waypoint:");
                 string lat = string.Format("{0:0.000000}", Latitude);
                 portGCS.Write(lat + ":");
                 string lng = string.Format("{0:0.000000}", Longitude);
                 portGCS.Write(lng + ":");
                 label_Test.Content = lat + "," + lng;
+                string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
+                //db.InsertData("", "", "", "", Convert.ToString(lat), Convert.ToString(lng), time);
             }
             catch (Exception ex)
             {
@@ -245,6 +262,8 @@ namespace GCS_WPF_2
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         private void PortBaudSetting()
         {
+            comboBoxPort.Items.Clear();
+            comboBoxBaud.Items.Clear();
             //show list of valid com ports
             foreach (string s in SerialPort.GetPortNames())
             {
@@ -286,7 +305,7 @@ namespace GCS_WPF_2
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
             //RefreshUI();
-            //PortBaudSetting();
+            PortBaudSetting();
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -296,6 +315,7 @@ namespace GCS_WPF_2
         {
             if (btnConnect.Content.Equals("CONNECT"))
             {
+                db = new DBHelper();
                 ConnectPortBaudAttempt();
                 btnConnect.Content = "STOP";
                 //Mulai Timer
@@ -303,6 +323,7 @@ namespace GCS_WPF_2
                 start = DateTime.Now;
                 Timer();
                 TimerFlightTime();
+                //portGCS.Write("SEMPAK:");
             }
             else
             {
@@ -325,7 +346,8 @@ namespace GCS_WPF_2
                     CloseDown.Start(); //close port in new thread to avoid hang
                 }
                 db.ExcelSave(TimeStart, TotalHours, TotalMinutes, TotalSeconds);
-                PopulateComboBoxRecord();
+                RefreshUI();
+                db.DeleteAllData();
             }
         }
 
@@ -558,6 +580,43 @@ namespace GCS_WPF_2
             }
         }
 
+        private void btnWaypoint_Click(object sender, RoutedEventArgs e)
+        {
+            if (portGCS.IsOpen == false)
+            {
+                MessageBox.Show("Silakan connect terlebih dahulu ke port controller", "Belum connect!");
+            }
+            else
+            {
+                portGCS.Write("waypoint:");
+            }
+        }
+
+        private void btnStartWaypoint_Click(object sender, RoutedEventArgs e)
+        {
+            portGCS.Write("startWaypoint:");
+            //SendDataKeController("GCS_DB");
+            //TrackRoute("GCS_DB");
+            //TrackDroneIcon();
+        }
+
+        private void SendDataKeController(string namaTabel)
+        {
+            LocationCollection locCollection = new LocationCollection();
+            List<GCS_DB_MODEL> listDBModel = db.getAllData(namaTabel);
+            foreach (GCS_DB_MODEL item in listDBModel)
+            {
+                double Lat, Lng;
+                Lat = Convert.ToDouble(item.Lat);
+                string lat = string.Format("{0:0.000000}", Lat);
+                Lng = Convert.ToDouble(item.Lng);
+                string lng = string.Format("{0:0.000000}", Lng);
+                portGCS.Write(lat + ":");
+                portGCS.Write(lng + ":");
+                //locCollection.Add(new Location(Lat, Lng));
+            }
+        }
+
         private void btnSendCommand_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -582,7 +641,7 @@ namespace GCS_WPF_2
             polyline.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Blue);
             polyline.StrokeThickness = 5;
             polyline.Opacity = 1;
-            LocationCollection locCollection = new LocationCollection();
+            locCollection = new LocationCollection();
             List<GCS_DB_MODEL> listDBModel = db.getAllData(namaTabel);
             foreach (GCS_DB_MODEL item in listDBModel)
             {
@@ -626,9 +685,58 @@ namespace GCS_WPF_2
 
             Location pos = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
             pin.Location = pos;
-            pin.Tag = "Lokasi";
             myMap.Children.Add(pin);
         }
+
+        private void AddCustomPin(string NamaGambar, double latt, double lngg, string teks)
+        {
+            MapLayer imageLayer = new MapLayer();
+            Image image = new Image();
+            Canvas canvas = new Canvas();
+            TextBlock txt = new TextBlock();
+
+            canvas.Background = null;
+
+            image.Height = 30;
+            image.Width = 30;
+            //Define the URI location of the image
+            BitmapImage myBitmap = new BitmapImage();
+            Uri uri = new Uri("/Resources/"+NamaGambar, UriKind.Relative);
+            myBitmap.BeginInit();
+            myBitmap.UriSource = uri;
+            myBitmap.DecodePixelHeight = 150;
+            myBitmap.EndInit();
+            image.Source = myBitmap;
+            image.Opacity = 1;
+            //image.Stretch = System.Windows.Media.Stretch.Fill;
+
+            txt.Text = teks;
+            txt.FontSize = 15;
+            txt.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+            txt.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.White);
+
+            // Add Child Elements to Canvas
+            // Set Canvas position
+            //Canvas.SetLeft(image, 10);
+            //Canvas.SetTop(image, 10);
+
+            // Add Custom pin to Canvas
+            canvas.Children.Add(image);
+            // Add teks to Canvas
+            Canvas.SetLeft(txt, 30);
+            Canvas.SetTop(txt, 30);
+            canvas.Children.Add(txt);
+
+            Location loc = new Location(latt, lngg);
+            //Center the image around the location specified
+            PositionOrigin position = PositionOrigin.Center;
+            //Add the image to the defined map layer
+            MapLayer.SetPosition(canvas, loc);
+            imageLayer.AddChild(canvas, loc, position);
+            //Add the image layer to the map
+            myMap.Children.Add(imageLayer);
+        }
+
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                            Drone icon ngikutin route                         ::
         //::  Isinya juga ada untuk menghitung jarak yang ditempuh dan ditampilkan ke UI  ::
@@ -643,12 +751,16 @@ namespace GCS_WPF_2
             List<UIElement> pushpinToRemove = new List<UIElement>();
             foreach (UIElement element in myMap.Children)
             {
-                foreach (UIElement p in myMap.Children)
+                foreach (UIElement p in myMap.Children.OfType<MapLayer>())
                 {
-                    if (p.GetType() == typeof(MapLayer))
+                    if ((((MapLayer)p).Tag) == "icon")
                     {
                         pushpinToRemove.Add(p);
                     }
+                    //if (p.GetType() == typeof(MapLayer))
+                    //{
+                    //    pushpinToRemove.Add(imageLayer);
+                    //}
                 }
                 foreach (UIElement pins in pushpinToRemove)
                 {
@@ -663,8 +775,8 @@ namespace GCS_WPF_2
             }
             //                   ***REMOVE ICON***
 
-            image.Height = 20;
-            image.Width = 20;
+            image.Height = 30;
+            image.Width = 30;
             //Define the URI location of the image
             BitmapImage myBitmapImage = new BitmapImage();
             Uri uri = new Uri("/Resources/drone.png", UriKind.Relative);
@@ -696,6 +808,7 @@ namespace GCS_WPF_2
             MapLayer.SetPosition(image, loc);
             //imageLayer.Children.Add(DroneIcon);
             imageLayer.AddChild(image, loc, position);
+            imageLayer.Tag = "icon";
             //Add the image layer to the map
             myMap.Children.Add(imageLayer);
         }
