@@ -25,6 +25,8 @@ using System.Device.Location;
 using Microsoft.Expression.Encoder.Devices;
 using WebcamControl;
 using System.Windows.Media.Animation;
+using AForge.Video.DirectShow;
+using AForge.Video;
 
 namespace GCS_WPF_2
 {
@@ -33,6 +35,23 @@ namespace GCS_WPF_2
     /// </summary>
     public partial class MainWindow : Window
     {
+        private FilterInfoCollection VideoCaptureDevices;
+        private VideoCaptureDevice FinalVideo;
+        //public event System.Windows.Forms.PaintEventHandler OnPaint;
+
+        System.Drawing.Bitmap mybitmap1 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/horizon.bmp");
+        System.Drawing.Bitmap mybitmap2 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/bezel.png");
+        System.Drawing.Bitmap mybitmap3 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/heading.bmp");
+        System.Drawing.Bitmap mybitmap4 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/wings.png");
+
+        double PitchAngle = 0;
+        double RollAngle = 0;
+        double YawAngle = 0;
+
+        Point ptBoule = new Point(-25, -410); //Ground-Sky initial location
+        Point ptHeading = new Point(-592, 150); // Heading ticks
+        Point ptRotation = new Point(150, 150); // Point of rotation
+
         DBHelper db;
 
         private static Location position = new Location(-7.778301, 110.374690);
@@ -53,7 +72,7 @@ namespace GCS_WPF_2
         {
             InitializeComponent();
             //InitiateAttitudeIndicator();
-            ConnectingWebcam();
+            ConnectingWebcam2();
             GetLaptopLocation();
             CheckFolderFlightRecord();
             batt_icon.Visibility = Visibility.Visible;
@@ -70,32 +89,197 @@ namespace GCS_WPF_2
             slider_zoom_map.Visibility = Visibility.Hidden;
             PortBaudSetting();
 
+            //// This bit of code (using double buffer) reduces flicker from Refresh commands
+            //this.SetStyle(System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
+            //this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint, true);
+            //this.SetStyle(System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer, true);
+            //this.SetStyle(System.Windows.Forms.ControlStyles.ResizeRedraw, true);
+            ////////////// END "reduce flicker" code ///////
         }
 
-        public void InitiateAttitudeIndicator()
-        {
-            System.Drawing.Bitmap bitmap1 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/horizon.bmp");
-        }
+        //protected override void OnPaint(System.Windows.Forms.PaintEventArgs paintEvnt)
+        //{
+        //    // Calling the base class OnPaint
+        //    //base.OnPaint(paintEvnt);
 
-        public void ConnectingWebcam()
-        {
-            Binding binding_1 = new Binding("SelectedValue");
-            binding_1.Source = VideoDevicesComboBox;
-            WebcamCtrl.SetBinding(Webcam.VideoDeviceProperty, binding_1);
-            WebcamCtrl.FrameRate = 30;
-            WebcamCtrl.FrameSize = new System.Drawing.Size(1280, 720);
 
-            string videoPath = @"E:\VideoClips";
-            if (!Directory.Exists(videoPath))
+        //    // Clipping mask for Attitude Indicator
+        //    paintEvnt.Graphics.Clip = new System.Drawing.Region(new System.Drawing.Rectangle(0,0,300,300));
+        //    paintEvnt.Graphics.FillRegion(System.Drawing.Brushes.Black, paintEvnt.Graphics.Clip);
+
+
+        //    // Make sure lines are drawn smoothly
+        //    paintEvnt.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+        //    // Create the graphics object
+        //    System.Drawing.Graphics gfx = paintEvnt.Graphics;
+
+        //    // Adjust and draw horizon image
+        //    RotateAndTranslate(paintEvnt, mybitmap1, RollAngle, 0, ptBoule, (double)(4 * PitchAngle), ptRotation, 1);
+
+        //    RotateAndTranslate2(paintEvnt, mybitmap3, YawAngle, RollAngle, 0, ptHeading, (double)(4 * PitchAngle), ptRotation, 1);
+
+
+
+        //    // Draw a mask
+        //    //Pen maskPen = new Pen(this.BackColor, 220); // width of mask
+        //    //gfx.DrawRectangle(maskPen, -100, -100, 500, 500); // size of mask
+
+        //    gfx.DrawImage(mybitmap2, 0, 0); // Draw bezel image
+        //    gfx.DrawImage(mybitmap4, 75, 125); // Draw wings image
+
+        //}
+
+        protected void RotateAndTranslate(System.Windows.Forms.PaintEventArgs pe, System.Drawing.Image img, Double alphaRot, Double alphaTrs, Point ptImg, double deltaPx, Point ptRot, float scaleFactor)
+        {
+            double beta = 0;
+            double d = 0;
+            float deltaXRot = 0;
+            float deltaYRot = 0;
+            float deltaXTrs = 0;
+            float deltaYTrs = 0;
+
+            // Rotation
+
+            if (ptImg != ptRot)
             {
-                Directory.CreateDirectory(videoPath);
-            }
-            WebcamCtrl.VideoDirectory = videoPath;
+                // Internals coeffs
+                if (ptRot.X != 0)
+                {
+                    beta = Math.Atan((double)ptRot.Y / (double)ptRot.X);
+                }
 
-            // Find available a/v devices
-            var vidDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
-            VideoDevicesComboBox.ItemsSource = vidDevices;
+                d = Math.Sqrt((ptRot.X * ptRot.X) + (ptRot.Y * ptRot.Y));
+
+                // Computed offset
+                deltaXRot = (float)(d * (Math.Cos(alphaRot - beta) - Math.Cos(alphaRot) * Math.Cos(alphaRot + beta) - Math.Sin(alphaRot) * Math.Sin(alphaRot + beta)));
+                deltaYRot = (float)(d * (Math.Sin(beta - alphaRot) + Math.Sin(alphaRot) * Math.Cos(alphaRot + beta) - Math.Cos(alphaRot) * Math.Sin(alphaRot + beta)));
+            }
+
+            // Translation
+
+            // Computed offset
+            deltaXTrs = (float)(deltaPx * (Math.Sin(alphaTrs)));
+            deltaYTrs = (float)(-deltaPx * (-Math.Cos(alphaTrs)));
+
+            // Rotate image support
+            pe.Graphics.RotateTransform((float)(alphaRot * 180 / Math.PI));
+
+            // Dispay image
+            pe.Graphics.DrawImage(img, ((float)ptImg.X + deltaXRot + deltaXTrs) * scaleFactor, ((float)ptImg.Y + deltaYRot + deltaYTrs) * scaleFactor, img.Width * scaleFactor, img.Height * scaleFactor);
+
+            // Put image support as found
+            pe.Graphics.RotateTransform((float)(-alphaRot * 180 / Math.PI));
+        }
+
+        protected void RotateAndTranslate2(System.Windows.Forms.PaintEventArgs pe, System.Drawing.Image img, Double yawRot, Double alphaRot, Double alphaTrs, Point ptImg, double deltaPx, Point ptRot, float scaleFactor)
+        {
+            double beta = 0;
+            double d = 0;
+            float deltaXRot = 0;
+            float deltaYRot = 0;
+            float deltaXTrs = 0;
+            float deltaYTrs = 0;
+
+            // Rotation
+
+            if (ptImg != ptRot)
+            {
+                // Internals coeffs
+                if (ptRot.X != 0)
+                {
+                    beta = Math.Atan((double)ptRot.Y / (double)ptRot.X);
+                }
+
+                d = Math.Sqrt((ptRot.X * ptRot.X) + (ptRot.Y * ptRot.Y));
+
+                // Computed offset
+                deltaXRot = (float)(d * (Math.Cos(alphaRot - beta) - Math.Cos(alphaRot) * Math.Cos(alphaRot + beta) - Math.Sin(alphaRot) * Math.Sin(alphaRot + beta) + yawRot));
+                deltaYRot = (float)(d * (Math.Sin(beta - alphaRot) + Math.Sin(alphaRot) * Math.Cos(alphaRot + beta) - Math.Cos(alphaRot) * Math.Sin(alphaRot + beta)));
+            }
+
+            // Translation
+
+            // Computed offset
+            deltaXTrs = (float)(deltaPx * (Math.Sin(alphaTrs)));
+            deltaYTrs = (float)(-deltaPx * (-Math.Cos(alphaTrs)));
+
+            // Rotate image support
+            pe.Graphics.RotateTransform((float)(alphaRot * 180 / Math.PI));
+
+            // Dispay image
+            pe.Graphics.DrawImage(img, ((float)ptImg.X + deltaXRot + deltaXTrs) * scaleFactor, ((float)ptImg.Y + deltaYRot + deltaYTrs) * scaleFactor, img.Width * scaleFactor, img.Height * scaleFactor);
+
+            // Put image support as found
+            pe.Graphics.RotateTransform((float)(-alphaRot * 180 / Math.PI));
+        }
+
+        //public void InitiateAttitudeIndicator()
+        //{
+        //    System.Drawing.Bitmap bitmap1 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/horizon.bmp");
+        //    for (int x = 0; i < 300; i++)
+        //    {
+        //        Random rand = new Random();
+        //        double angle = rand.NextDouble() * (270 - 90) + 90;
+        //        DoubleAnimation da = new DoubleAnimation(angle, 0, new Duration(TimeSpan.FromSeconds(1)));
+        //        RotateTransform rt = new RotateTransform();
+        //        image1.RenderTransform = rt;
+        //        image1.RenderTransformOrigin = new Point(0.5, 0.5);
+        //        //da.RepeatBehavior = RepeatBehavior.Forever;
+        //        rt.BeginAnimation(RotateTransform.AngleProperty, da);
+        //    }
+        //}
+
+        //public void ConnectingWebcam()
+        //{
+        //    Binding binding_1 = new Binding("SelectedValue");
+        //    binding_1.Source = VideoDevicesComboBox;
+        //    WebcamCtrl.SetBinding(Webcam.VideoDeviceProperty, binding_1);
+        //    WebcamCtrl.FrameRate = 30;
+        //    WebcamCtrl.FrameSize = new System.Drawing.Size(1280, 720);
+
+        //    string videoPath = @"E:\VideoClips";
+        //    if (!Directory.Exists(videoPath))
+        //    {
+        //        Directory.CreateDirectory(videoPath);
+        //    }
+        //    WebcamCtrl.VideoDirectory = videoPath;
+
+        //    // Find available a/v devices
+        //    var vidDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
+        //    VideoDevicesComboBox.ItemsSource = vidDevices;
+        //    VideoDevicesComboBox.SelectedIndex = 0;
+        //}
+        public void ConnectingWebcam2()
+        {
+            VideoCaptureDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            foreach (FilterInfo VideoCaptureDevice in VideoCaptureDevices)
+            {
+                VideoDevicesComboBox.Items.Add(VideoCaptureDevice.Name);
+            }
             VideoDevicesComboBox.SelectedIndex = 0;
+        }
+        void FinalVideo_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            System.Drawing.Image img = (System.Drawing.Bitmap)eventArgs.Frame.Clone();
+            //BitmapImage bi = new BitmapImage();
+            //bi.BeginInit();
+            //bi = Compatibility.Compatibility.BitmaptoBitmapImage((System.Drawing.Bitmap)video); //download the compatibility api below
+            //image1.Source = bi;
+            //bi.EndInit();
+            MemoryStream ms = new MemoryStream();
+            img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+            ms.Seek(0, SeekOrigin.Begin);
+            BitmapImage bi = new BitmapImage();
+            bi.BeginInit();
+            bi.StreamSource = ms;
+            bi.EndInit();
+
+            bi.Freeze();
+            Dispatcher.BeginInvoke(new System.Threading.ThreadStart(delegate
+            {
+                image1.Source = bi;
+            }));
         }
 
         public void GetLaptopLocation()
@@ -560,23 +744,31 @@ namespace GCS_WPF_2
             if (btnConnectWebcam.Content.Equals("CONNECT"))
             {
                 btnConnectWebcam.Content = "STOP";
-                try
-                {
-                    // Display webcam video
-                    WebcamCtrl.StartPreview();
-                    WebcamCtrl.StartRecording();
-                }
-                catch (Microsoft.Expression.Encoder.SystemErrorException ex)
-                {
-                    MessageBox.Show("Device is in use by another application");
-                }
+                FinalVideo = new VideoCaptureDevice(VideoCaptureDevices[VideoDevicesComboBox.SelectedIndex].MonikerString);
+                FinalVideo.NewFrame += new NewFrameEventHandler(FinalVideo_NewFrame);
+                FinalVideo.Start();
+                //try
+                //{
+                //    // Display webcam video
+                //    WebcamCtrl.StartPreview();
+                //    WebcamCtrl.StartRecording();
+                //}
+                //catch (Microsoft.Expression.Encoder.SystemErrorException ex)
+                //{
+                //    MessageBox.Show("Device is in use by another application");
+                //}
             }
             else
             {
                 btnConnectWebcam.Content = "CONNECT";
+                if (FinalVideo.IsRunning)
+                {
+                    FinalVideo.Stop();
+                    image1.Source = null;
+                }
                 // Stop the display of webcam video.
-                WebcamCtrl.StopPreview();
-                WebcamCtrl.StopRecording();
+                //WebcamCtrl.StopPreview();
+                //WebcamCtrl.StopRecording();
             }
         }
 
