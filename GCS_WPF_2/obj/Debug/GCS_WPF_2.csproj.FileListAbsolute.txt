@@ -29,12 +29,12 @@ E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expres
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Utilities.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Types.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.dll
+E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.Video.DirectShow.dll
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.Controls.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.Imaging.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.Math.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.Video.xml
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.Video.DirectShow.xml
-E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.Video.DirectShow.dll
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\AForge.Video.dll
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.xml
