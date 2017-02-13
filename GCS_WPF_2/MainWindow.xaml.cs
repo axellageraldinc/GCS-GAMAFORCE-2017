@@ -531,7 +531,7 @@ namespace GCS_WPF_2
                 }
                 db.ExcelSave(TimeStart, TotalHours, TotalMinutes, TotalSeconds);
                 RefreshUI();
-                db.DeleteAllData();
+                db.DeleteAllData("GCS_DB");
             }
         }
 
