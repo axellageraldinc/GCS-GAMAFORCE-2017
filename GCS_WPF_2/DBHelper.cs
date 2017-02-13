@@ -19,7 +19,7 @@ namespace GCS_WPF_2
         public DBHelper()
         {
             OpenConnection();
-            DeleteAllData();
+            DeleteAllData("GCS_DB");
             string Query = "CREATE TABLE IF NOT EXISTS GCS_DB(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "ALTITUDE TEXT, "
                 + "YAW TEXT, "
@@ -30,7 +30,6 @@ namespace GCS_WPF_2
                 + "TIME TEXT)";
             SQLiteCommand cmd = new SQLiteCommand(Query, conn);
             cmd.ExecuteNonQuery();
-
         }
         public void OpenConnection()
         {
@@ -135,9 +134,9 @@ namespace GCS_WPF_2
             return model1;
         }
 
-        public void DeleteAllData()
+        public void DeleteAllData(string tableName)
         {
-            string Query = "DROP TABLE IF EXISTS GCS_DB";
+            string Query = "DROP TABLE IF EXISTS " + tableName;
             SQLiteCommand cmd = new SQLiteCommand(Query, conn);
             cmd.ExecuteNonQuery();
         }
@@ -237,10 +236,9 @@ namespace GCS_WPF_2
             //Dibuat auto overwrite file yang lama
             xlWorkBook.SaveAs(Environment.CurrentDirectory + @"\FlightRecord\"+timeStart+".xlsx");
             xlWorkBook.Close();
-            executed = true;
             //xlApp.Visible = true;
             xlApp.Quit();
-            return executed;
+            return true;
                 //xlWorkBook.Close(true, misValue, misValue);
 
             //releaseObject(xlWorkSheet);
