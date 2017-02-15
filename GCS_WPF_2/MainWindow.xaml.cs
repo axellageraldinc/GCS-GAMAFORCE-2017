@@ -27,6 +27,8 @@ using WebcamControl;
 using System.Windows.Media.Animation;
 using AForge.Video.DirectShow;
 using AForge.Video;
+using Microsoft.Research.DynamicDataDisplay.DataSources;
+using Microsoft.Research.DynamicDataDisplay;
 
 namespace GCS_WPF_2
 {
@@ -35,6 +37,8 @@ namespace GCS_WPF_2
     /// </summary>
     public partial class MainWindow : Window
     {
+        PointCollection newPoint;
+
         private FilterInfoCollection VideoCaptureDevices;
         private VideoCaptureDevice FinalVideo;
         //public event System.Windows.Forms.PaintEventHandler OnPaint;
@@ -57,13 +61,14 @@ namespace GCS_WPF_2
         private static Location position = new Location(-7.778301, 110.374690);
         List<MapPolyline> listPolyline;
         private static int zoom = 15, second=0, minute=0, hour=0, i=1;
+        double x;
         private string TimeStart;
         private DateTime start, stop;
         LocationConverter locConverter = new LocationConverter();
         private GeoCoordinateWatcher Watcher = null;
 
         SerialPort portGCS;
-        DispatcherTimer timer, timerFlight;
+        DispatcherTimer timer, timerFlight, timerGraph;
         LocationCollection locCollection;
 
         private static double altitude, yaw, pitch, roll, Lat, Lng, jarak_cetak=0, battery;
@@ -130,90 +135,112 @@ namespace GCS_WPF_2
 
         //}
 
-        protected void RotateAndTranslate(System.Windows.Forms.PaintEventArgs pe, System.Drawing.Image img, Double alphaRot, Double alphaTrs, Point ptImg, double deltaPx, Point ptRot, float scaleFactor)
+        void PlotGraphic()
         {
-            double beta = 0;
-            double d = 0;
-            float deltaXRot = 0;
-            float deltaYRot = 0;
-            float deltaXTrs = 0;
-            float deltaYTrs = 0;
+            newPoint = new PointCollection();
+            timerGraph = new DispatcherTimer();
+            timerGraph.Interval = TimeSpan.FromMilliseconds(600);
+            timerGraph.Tick += new EventHandler(timerGraph_Tick);
+            timerGraph.Start();
 
-            // Rotation
-
-            if (ptImg != ptRot)
-            {
-                // Internals coeffs
-                if (ptRot.X != 0)
-                {
-                    beta = Math.Atan((double)ptRot.Y / (double)ptRot.X);
-                }
-
-                d = Math.Sqrt((ptRot.X * ptRot.X) + (ptRot.Y * ptRot.Y));
-
-                // Computed offset
-                deltaXRot = (float)(d * (Math.Cos(alphaRot - beta) - Math.Cos(alphaRot) * Math.Cos(alphaRot + beta) - Math.Sin(alphaRot) * Math.Sin(alphaRot + beta)));
-                deltaYRot = (float)(d * (Math.Sin(beta - alphaRot) + Math.Sin(alphaRot) * Math.Cos(alphaRot + beta) - Math.Cos(alphaRot) * Math.Sin(alphaRot + beta)));
-            }
-
-            // Translation
-
-            // Computed offset
-            deltaXTrs = (float)(deltaPx * (Math.Sin(alphaTrs)));
-            deltaYTrs = (float)(-deltaPx * (-Math.Cos(alphaTrs)));
-
-            // Rotate image support
-            pe.Graphics.RotateTransform((float)(alphaRot * 180 / Math.PI));
-
-            // Dispay image
-            pe.Graphics.DrawImage(img, ((float)ptImg.X + deltaXRot + deltaXTrs) * scaleFactor, ((float)ptImg.Y + deltaYRot + deltaYTrs) * scaleFactor, img.Width * scaleFactor, img.Height * scaleFactor);
-
-            // Put image support as found
-            pe.Graphics.RotateTransform((float)(-alphaRot * 180 / Math.PI));
+            var ds = new EnumerableDataSource<Points>(newPoint);
+            ds.SetXMapping(x => x.Waktu);
+            ds.SetYMapping(y => y.Variabel);
+            plotter.AddLineGraph(ds, Colors.Green, 2, "Altitude"); // to use this method you need to add manually "using Microsoft.Research.DynamicDataDisplay;"
+            plotter.FitToView();
+        }
+        void timerGraph_Tick(object sender, EventArgs e)
+        {
+            newPoint.Add(new Points(altitude, x/1000));
+            x += 600;
         }
 
-        protected void RotateAndTranslate2(System.Windows.Forms.PaintEventArgs pe, System.Drawing.Image img, Double yawRot, Double alphaRot, Double alphaTrs, Point ptImg, double deltaPx, Point ptRot, float scaleFactor)
-        {
-            double beta = 0;
-            double d = 0;
-            float deltaXRot = 0;
-            float deltaYRot = 0;
-            float deltaXTrs = 0;
-            float deltaYTrs = 0;
+        #region RotateTranslate
+        //protected void RotateAndTranslate(System.Windows.Forms.PaintEventArgs pe, System.Drawing.Image img, Double alphaRot, Double alphaTrs, Point ptImg, double deltaPx, Point ptRot, float scaleFactor)
+        //{
+        //    double beta = 0;
+        //    double d = 0;
+        //    float deltaXRot = 0;
+        //    float deltaYRot = 0;
+        //    float deltaXTrs = 0;
+        //    float deltaYTrs = 0;
 
-            // Rotation
+        //    // Rotation
 
-            if (ptImg != ptRot)
-            {
-                // Internals coeffs
-                if (ptRot.X != 0)
-                {
-                    beta = Math.Atan((double)ptRot.Y / (double)ptRot.X);
-                }
+        //    if (ptImg != ptRot)
+        //    {
+        //        // Internals coeffs
+        //        if (ptRot.X != 0)
+        //        {
+        //            beta = Math.Atan((double)ptRot.Y / (double)ptRot.X);
+        //        }
 
-                d = Math.Sqrt((ptRot.X * ptRot.X) + (ptRot.Y * ptRot.Y));
+        //        d = Math.Sqrt((ptRot.X * ptRot.X) + (ptRot.Y * ptRot.Y));
 
-                // Computed offset
-                deltaXRot = (float)(d * (Math.Cos(alphaRot - beta) - Math.Cos(alphaRot) * Math.Cos(alphaRot + beta) - Math.Sin(alphaRot) * Math.Sin(alphaRot + beta) + yawRot));
-                deltaYRot = (float)(d * (Math.Sin(beta - alphaRot) + Math.Sin(alphaRot) * Math.Cos(alphaRot + beta) - Math.Cos(alphaRot) * Math.Sin(alphaRot + beta)));
-            }
+        //        // Computed offset
+        //        deltaXRot = (float)(d * (Math.Cos(alphaRot - beta) - Math.Cos(alphaRot) * Math.Cos(alphaRot + beta) - Math.Sin(alphaRot) * Math.Sin(alphaRot + beta)));
+        //        deltaYRot = (float)(d * (Math.Sin(beta - alphaRot) + Math.Sin(alphaRot) * Math.Cos(alphaRot + beta) - Math.Cos(alphaRot) * Math.Sin(alphaRot + beta)));
+        //    }
 
-            // Translation
+        //    // Translation
 
-            // Computed offset
-            deltaXTrs = (float)(deltaPx * (Math.Sin(alphaTrs)));
-            deltaYTrs = (float)(-deltaPx * (-Math.Cos(alphaTrs)));
+        //    // Computed offset
+        //    deltaXTrs = (float)(deltaPx * (Math.Sin(alphaTrs)));
+        //    deltaYTrs = (float)(-deltaPx * (-Math.Cos(alphaTrs)));
 
-            // Rotate image support
-            pe.Graphics.RotateTransform((float)(alphaRot * 180 / Math.PI));
+        //    // Rotate image support
+        //    pe.Graphics.RotateTransform((float)(alphaRot * 180 / Math.PI));
 
-            // Dispay image
-            pe.Graphics.DrawImage(img, ((float)ptImg.X + deltaXRot + deltaXTrs) * scaleFactor, ((float)ptImg.Y + deltaYRot + deltaYTrs) * scaleFactor, img.Width * scaleFactor, img.Height * scaleFactor);
+        //    // Dispay image
+        //    pe.Graphics.DrawImage(img, ((float)ptImg.X + deltaXRot + deltaXTrs) * scaleFactor, ((float)ptImg.Y + deltaYRot + deltaYTrs) * scaleFactor, img.Width * scaleFactor, img.Height * scaleFactor);
 
-            // Put image support as found
-            pe.Graphics.RotateTransform((float)(-alphaRot * 180 / Math.PI));
-        }
+        //    // Put image support as found
+        //    pe.Graphics.RotateTransform((float)(-alphaRot * 180 / Math.PI));
+        //}
+        #endregion
+        #region RotateTranslate2
+        //protected void RotateAndTranslate2(System.Windows.Forms.PaintEventArgs pe, System.Drawing.Image img, Double yawRot, Double alphaRot, Double alphaTrs, Point ptImg, double deltaPx, Point ptRot, float scaleFactor)
+        //{
+        //    double beta = 0;
+        //    double d = 0;
+        //    float deltaXRot = 0;
+        //    float deltaYRot = 0;
+        //    float deltaXTrs = 0;
+        //    float deltaYTrs = 0;
 
+        //    // Rotation
+
+        //    if (ptImg != ptRot)
+        //    {
+        //        // Internals coeffs
+        //        if (ptRot.X != 0)
+        //        {
+        //            beta = Math.Atan((double)ptRot.Y / (double)ptRot.X);
+        //        }
+
+        //        d = Math.Sqrt((ptRot.X * ptRot.X) + (ptRot.Y * ptRot.Y));
+
+        //        // Computed offset
+        //        deltaXRot = (float)(d * (Math.Cos(alphaRot - beta) - Math.Cos(alphaRot) * Math.Cos(alphaRot + beta) - Math.Sin(alphaRot) * Math.Sin(alphaRot + beta) + yawRot));
+        //        deltaYRot = (float)(d * (Math.Sin(beta - alphaRot) + Math.Sin(alphaRot) * Math.Cos(alphaRot + beta) - Math.Cos(alphaRot) * Math.Sin(alphaRot + beta)));
+        //    }
+
+        //    // Translation
+
+        //    // Computed offset
+        //    deltaXTrs = (float)(deltaPx * (Math.Sin(alphaTrs)));
+        //    deltaYTrs = (float)(-deltaPx * (-Math.Cos(alphaTrs)));
+
+        //    // Rotate image support
+        //    pe.Graphics.RotateTransform((float)(alphaRot * 180 / Math.PI));
+
+        //    // Dispay image
+        //    pe.Graphics.DrawImage(img, ((float)ptImg.X + deltaXRot + deltaXTrs) * scaleFactor, ((float)ptImg.Y + deltaYRot + deltaYTrs) * scaleFactor, img.Width * scaleFactor, img.Height * scaleFactor);
+
+        //    // Put image support as found
+        //    pe.Graphics.RotateTransform((float)(-alphaRot * 180 / Math.PI));
+        //}
+        #endregion
         //public void InitiateAttitudeIndicator()
         //{
         //    System.Drawing.Bitmap bitmap1 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/horizon.bmp");
@@ -229,7 +256,7 @@ namespace GCS_WPF_2
         //        rt.BeginAnimation(RotateTransform.AngleProperty, da);
         //    }
         //}
-
+        #region Webcam plugin WebCamControl (gagal)
         //public void ConnectingWebcam()
         //{
         //    Binding binding_1 = new Binding("SelectedValue");
@@ -250,6 +277,11 @@ namespace GCS_WPF_2
         //    VideoDevicesComboBox.ItemsSource = vidDevices;
         //    VideoDevicesComboBox.SelectedIndex = 0;
         //}
+        #endregion
+
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::              Connect Webcam, plugin AForge.NET                 :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         public void ConnectingWebcam2()
         {
             VideoCaptureDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
@@ -499,6 +531,7 @@ namespace GCS_WPF_2
         {
             if (btnConnect.Content.Equals("CONNECT"))
             {
+                PlotGraphic();
                 db = new DBHelper();
                 ConnectPortBaudAttempt();
                 btnConnect.Content = "STOP";
@@ -629,6 +662,11 @@ namespace GCS_WPF_2
                 txtRoll.Content = model1.Roll;
                 txtLat.Content = model1.Lat;
                 txtLng.Content = model1.Lng;
+
+                Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
+                Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
+                Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
+
                 label_batt.Content = Convert.ToString(battery) + "%";
                 if (battery >= 75)
                 {
@@ -790,6 +828,13 @@ namespace GCS_WPF_2
             //SendDataKeController("GCS_DB");
             //TrackRoute("GCS_DB");
             //TrackDroneIcon();
+        }
+
+        private void btnMaxHUD_Click(object sender, RoutedEventArgs e)
+        {
+            this.Panel_HUD.Children.Remove(this.HUD_ATT);
+            HUD_Big wind = new HUD_Big(this.HUD_ATT);
+            wind.Show();
         }
 
         private void SendDataKeController(string namaTabel)
