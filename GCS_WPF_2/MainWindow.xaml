@@ -92,9 +92,6 @@
         <Rectangle x:Name="rectangle2" Fill="#FF3993CF" HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="1280" MouseDown="rectangle2_MouseDown"/>
         <!--<Grid Margin="576,156,176,74">
         </Grid>-->
-        <Button x:Name="btnTakeOff" Content="TAKE OFF" HorizontalAlignment="Left" Margin="1159,274,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}"/>
-        <Button x:Name="btnLanding" Content="LANDING" HorizontalAlignment="Left" Margin="1159,229,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}"/>
-        <Button x:Name="btnWaypoint" Content="WAYPOINT" HorizontalAlignment="Left" Margin="1159,316,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnWaypoint_Click"/>
         <Image x:Name="batt_icon" HorizontalAlignment="Left" Height="145" Margin="1127,458,0,0" VerticalAlignment="Top" Width="135" Source="E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS1_WPF\Resources\battery2.png" Stretch="Fill"/>
         <Grid x:Name="GridPortSetting" Margin="16,33,816,629">
             <Label x:Name="label_Copy5" Content="PORT SETTING" HorizontalAlignment="Center" Margin="0,0,284,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="#FF87898F" Width="164"/>
@@ -122,7 +119,7 @@
         </Grid>
         <Button x:Name="btnRefresh" Content="REFRESH" HorizontalAlignment="Left" Margin="479,68,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" Click="btnRefresh_Click" BorderThickness="1" Template="{DynamicResource btnClickStyle}"/>
 
-        <Button x:Name="btnCalibrate" Content="CALIBRATE" HorizontalAlignment="Left" Margin="1159,189,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}"/>
+        <Button x:Name="btnCalibrate" Content="CALIBRATE" HorizontalAlignment="Left" Margin="1159,189,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnCalibrate_Click"/>
         <Grid x:Name="GridFlightTime" Margin="1124,655,14,5">
             <Rectangle Fill="White" HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" Width="142">
                 <Rectangle.Effect>
@@ -150,9 +147,9 @@
             <Label x:Name="label_hour_Copy3" Content="KM" HorizontalAlignment="Center" Margin="84,30,0,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="13.333" Foreground="#FF2D3E50" Width="51" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         </Grid>
 
-        <Slider Name="Slider_Yaw" Minimum="-180" Maximum="180" Value="0" TickFrequency="20" TickPlacement="BottomRight"  VerticalAlignment="Center" Margin="17,691,1153,5"/>
-        <Slider Name="Slider_Pitch" Minimum="-90" Maximum="90" Value="0" TickFrequency="10" TickPlacement="BottomRight"  VerticalAlignment="Center" Margin="281,690,880,6"/>
-        <Slider Name="Slider_Roll" Minimum="-180" Maximum="180" Value="0" TickFrequency="20" TickPlacement="BottomRight"  VerticalAlignment="Center" Margin="151,691,1020,5"/>
+        <Slider Name="Slider_Yaw" Minimum="-180" Maximum="180" Value="0" TickFrequency="20" TickPlacement="BottomRight"  VerticalAlignment="Center" Margin="17,691,1153,5" Visibility="Hidden"/>
+        <Slider Name="Slider_Pitch" Minimum="-90" Maximum="90" Value="0" TickFrequency="10" TickPlacement="BottomRight"  VerticalAlignment="Center" Margin="281,690,880,6" Visibility="Hidden"/>
+        <Slider Name="Slider_Roll" Minimum="-180" Maximum="180" Value="0" TickFrequency="20" TickPlacement="BottomRight"  VerticalAlignment="Center" Margin="151,691,1020,5" Visibility="Hidden"/>
 
         <TextBox x:Name="BoxCommand" HorizontalAlignment="Left" Height="25" Margin="19,660,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="455" BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Terminal" VerticalContentAlignment="Center">
             <TextBox.Effect>
@@ -256,5 +253,8 @@
                 </TabItem>
             </TabControl>
         </Grid>
+        <Button x:Name="btnLanding" Content="LANDING" HorizontalAlignment="Left" Margin="1159,229,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnLanding_Click"/>
+        <Button x:Name="btnTakeOff" Content="TAKE OFF" HorizontalAlignment="Left" Margin="1159,274,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnTakeOff_Click"/>
+        <Button x:Name="btnWaypoint" Content="WAYPOINT" HorizontalAlignment="Left" Margin="1159,316,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnWaypoint_Click"/>
     </Grid>
 </Window>

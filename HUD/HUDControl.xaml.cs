@@ -685,7 +685,6 @@ namespace HUD
 
         #endregion
 
-
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);

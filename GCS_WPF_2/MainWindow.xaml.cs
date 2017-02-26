@@ -37,24 +37,11 @@ namespace GCS_WPF_2
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region DeklarasiVariabel
         PointCollection newPoint;
 
         private FilterInfoCollection VideoCaptureDevices;
         private VideoCaptureDevice FinalVideo;
-        //public event System.Windows.Forms.PaintEventHandler OnPaint;
-
-        System.Drawing.Bitmap mybitmap1 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/horizon.bmp");
-        System.Drawing.Bitmap mybitmap2 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/bezel.png");
-        System.Drawing.Bitmap mybitmap3 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/heading.bmp");
-        System.Drawing.Bitmap mybitmap4 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/wings.png");
-
-        double PitchAngle = 0;
-        double RollAngle = 0;
-        double YawAngle = 0;
-
-        Point ptBoule = new Point(-25, -410); //Ground-Sky initial location
-        Point ptHeading = new Point(-592, 150); // Heading ticks
-        Point ptRotation = new Point(150, 150); // Point of rotation
 
         DBHelper db;
 
@@ -72,10 +59,12 @@ namespace GCS_WPF_2
         LocationCollection locCollection;
 
         private static double altitude, yaw, pitch, roll, Lat, Lng, jarak_cetak=0, battery;
+        #endregion
 
         public MainWindow()
         {
             InitializeComponent();
+            db = new DBHelper();
             //InitiateAttitudeIndicator();
             ConnectingWebcam2();
             GetLaptopLocation();
@@ -93,169 +82,8 @@ namespace GCS_WPF_2
             //LoadMap();
             slider_zoom_map.Visibility = Visibility.Hidden;
             PortBaudSetting();
-
-            //// This bit of code (using double buffer) reduces flicker from Refresh commands
-            //this.SetStyle(System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
-            //this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint, true);
-            //this.SetStyle(System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer, true);
-            //this.SetStyle(System.Windows.Forms.ControlStyles.ResizeRedraw, true);
-            ////////////// END "reduce flicker" code ///////
         }
-
-        //protected override void OnPaint(System.Windows.Forms.PaintEventArgs paintEvnt)
-        //{
-        //    // Calling the base class OnPaint
-        //    //base.OnPaint(paintEvnt);
-
-
-        //    // Clipping mask for Attitude Indicator
-        //    paintEvnt.Graphics.Clip = new System.Drawing.Region(new System.Drawing.Rectangle(0,0,300,300));
-        //    paintEvnt.Graphics.FillRegion(System.Drawing.Brushes.Black, paintEvnt.Graphics.Clip);
-
-
-        //    // Make sure lines are drawn smoothly
-        //    paintEvnt.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-
-        //    // Create the graphics object
-        //    System.Drawing.Graphics gfx = paintEvnt.Graphics;
-
-        //    // Adjust and draw horizon image
-        //    RotateAndTranslate(paintEvnt, mybitmap1, RollAngle, 0, ptBoule, (double)(4 * PitchAngle), ptRotation, 1);
-
-        //    RotateAndTranslate2(paintEvnt, mybitmap3, YawAngle, RollAngle, 0, ptHeading, (double)(4 * PitchAngle), ptRotation, 1);
-
-
-
-        //    // Draw a mask
-        //    //Pen maskPen = new Pen(this.BackColor, 220); // width of mask
-        //    //gfx.DrawRectangle(maskPen, -100, -100, 500, 500); // size of mask
-
-        //    gfx.DrawImage(mybitmap2, 0, 0); // Draw bezel image
-        //    gfx.DrawImage(mybitmap4, 75, 125); // Draw wings image
-
-        //}
-
-        void PlotGraphic()
-        {
-            newPoint = new PointCollection();
-            timerGraph = new DispatcherTimer();
-            timerGraph.Interval = TimeSpan.FromMilliseconds(600);
-            timerGraph.Tick += new EventHandler(timerGraph_Tick);
-            timerGraph.Start();
-
-            var ds = new EnumerableDataSource<Points>(newPoint);
-            ds.SetXMapping(x => x.Waktu);
-            ds.SetYMapping(y => y.Variabel);
-            plotter.AddLineGraph(ds, Colors.Green, 2, "Altitude"); // to use this method you need to add manually "using Microsoft.Research.DynamicDataDisplay;"
-            plotter.FitToView();
-        }
-        void timerGraph_Tick(object sender, EventArgs e)
-        {
-            newPoint.Add(new Points(altitude, x/1000));
-            x += 600;
-        }
-
-        #region RotateTranslate
-        //protected void RotateAndTranslate(System.Windows.Forms.PaintEventArgs pe, System.Drawing.Image img, Double alphaRot, Double alphaTrs, Point ptImg, double deltaPx, Point ptRot, float scaleFactor)
-        //{
-        //    double beta = 0;
-        //    double d = 0;
-        //    float deltaXRot = 0;
-        //    float deltaYRot = 0;
-        //    float deltaXTrs = 0;
-        //    float deltaYTrs = 0;
-
-        //    // Rotation
-
-        //    if (ptImg != ptRot)
-        //    {
-        //        // Internals coeffs
-        //        if (ptRot.X != 0)
-        //        {
-        //            beta = Math.Atan((double)ptRot.Y / (double)ptRot.X);
-        //        }
-
-        //        d = Math.Sqrt((ptRot.X * ptRot.X) + (ptRot.Y * ptRot.Y));
-
-        //        // Computed offset
-        //        deltaXRot = (float)(d * (Math.Cos(alphaRot - beta) - Math.Cos(alphaRot) * Math.Cos(alphaRot + beta) - Math.Sin(alphaRot) * Math.Sin(alphaRot + beta)));
-        //        deltaYRot = (float)(d * (Math.Sin(beta - alphaRot) + Math.Sin(alphaRot) * Math.Cos(alphaRot + beta) - Math.Cos(alphaRot) * Math.Sin(alphaRot + beta)));
-        //    }
-
-        //    // Translation
-
-        //    // Computed offset
-        //    deltaXTrs = (float)(deltaPx * (Math.Sin(alphaTrs)));
-        //    deltaYTrs = (float)(-deltaPx * (-Math.Cos(alphaTrs)));
-
-        //    // Rotate image support
-        //    pe.Graphics.RotateTransform((float)(alphaRot * 180 / Math.PI));
-
-        //    // Dispay image
-        //    pe.Graphics.DrawImage(img, ((float)ptImg.X + deltaXRot + deltaXTrs) * scaleFactor, ((float)ptImg.Y + deltaYRot + deltaYTrs) * scaleFactor, img.Width * scaleFactor, img.Height * scaleFactor);
-
-        //    // Put image support as found
-        //    pe.Graphics.RotateTransform((float)(-alphaRot * 180 / Math.PI));
-        //}
-        #endregion
-        #region RotateTranslate2
-        //protected void RotateAndTranslate2(System.Windows.Forms.PaintEventArgs pe, System.Drawing.Image img, Double yawRot, Double alphaRot, Double alphaTrs, Point ptImg, double deltaPx, Point ptRot, float scaleFactor)
-        //{
-        //    double beta = 0;
-        //    double d = 0;
-        //    float deltaXRot = 0;
-        //    float deltaYRot = 0;
-        //    float deltaXTrs = 0;
-        //    float deltaYTrs = 0;
-
-        //    // Rotation
-
-        //    if (ptImg != ptRot)
-        //    {
-        //        // Internals coeffs
-        //        if (ptRot.X != 0)
-        //        {
-        //            beta = Math.Atan((double)ptRot.Y / (double)ptRot.X);
-        //        }
-
-        //        d = Math.Sqrt((ptRot.X * ptRot.X) + (ptRot.Y * ptRot.Y));
-
-        //        // Computed offset
-        //        deltaXRot = (float)(d * (Math.Cos(alphaRot - beta) - Math.Cos(alphaRot) * Math.Cos(alphaRot + beta) - Math.Sin(alphaRot) * Math.Sin(alphaRot + beta) + yawRot));
-        //        deltaYRot = (float)(d * (Math.Sin(beta - alphaRot) + Math.Sin(alphaRot) * Math.Cos(alphaRot + beta) - Math.Cos(alphaRot) * Math.Sin(alphaRot + beta)));
-        //    }
-
-        //    // Translation
-
-        //    // Computed offset
-        //    deltaXTrs = (float)(deltaPx * (Math.Sin(alphaTrs)));
-        //    deltaYTrs = (float)(-deltaPx * (-Math.Cos(alphaTrs)));
-
-        //    // Rotate image support
-        //    pe.Graphics.RotateTransform((float)(alphaRot * 180 / Math.PI));
-
-        //    // Dispay image
-        //    pe.Graphics.DrawImage(img, ((float)ptImg.X + deltaXRot + deltaXTrs) * scaleFactor, ((float)ptImg.Y + deltaYRot + deltaYTrs) * scaleFactor, img.Width * scaleFactor, img.Height * scaleFactor);
-
-        //    // Put image support as found
-        //    pe.Graphics.RotateTransform((float)(-alphaRot * 180 / Math.PI));
-        //}
-        #endregion
-        //public void InitiateAttitudeIndicator()
-        //{
-        //    System.Drawing.Bitmap bitmap1 = new System.Drawing.Bitmap(Environment.CurrentDirectory + "/horizon.bmp");
-        //    for (int x = 0; i < 300; i++)
-        //    {
-        //        Random rand = new Random();
-        //        double angle = rand.NextDouble() * (270 - 90) + 90;
-        //        DoubleAnimation da = new DoubleAnimation(angle, 0, new Duration(TimeSpan.FromSeconds(1)));
-        //        RotateTransform rt = new RotateTransform();
-        //        image1.RenderTransform = rt;
-        //        image1.RenderTransformOrigin = new Point(0.5, 0.5);
-        //        //da.RepeatBehavior = RepeatBehavior.Forever;
-        //        rt.BeginAnimation(RotateTransform.AngleProperty, da);
-        //    }
-        //}
+        
         #region Webcam plugin WebCamControl (gagal)
         //public void ConnectingWebcam()
         //{
@@ -279,6 +107,29 @@ namespace GCS_WPF_2
         //}
         #endregion
 
+        #region DynamicDataDisplay
+        void PlotGraphic()
+        {
+            newPoint = new PointCollection();
+            timerGraph = new DispatcherTimer();
+            timerGraph.Interval = TimeSpan.FromMilliseconds(600);
+            timerGraph.Tick += new EventHandler(timerGraph_Tick);
+            timerGraph.Start();
+
+            var ds = new EnumerableDataSource<Points>(newPoint);
+            ds.SetXMapping(x => x.Waktu);
+            ds.SetYMapping(y => y.Variabel);
+            plotter.AddLineGraph(ds, Colors.Green, 2, "Altitude"); // to use this method you need to add manually "using Microsoft.Research.DynamicDataDisplay;"
+            plotter.FitToView();
+        }
+        void timerGraph_Tick(object sender, EventArgs e)
+        {
+            newPoint.Add(new Points(altitude, x / 1000));
+            x += 600;
+        }
+        #endregion
+
+        #region ConnectWebcam
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::              Connect Webcam, plugin AForge.NET                 :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -313,7 +164,41 @@ namespace GCS_WPF_2
                 image1.Source = bi;
             }));
         }
+        private void btnConnectWebcam_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnConnectWebcam.Content.Equals("CONNECT"))
+            {
+                btnConnectWebcam.Content = "STOP";
+                FinalVideo = new VideoCaptureDevice(VideoCaptureDevices[VideoDevicesComboBox.SelectedIndex].MonikerString);
+                FinalVideo.NewFrame += new NewFrameEventHandler(FinalVideo_NewFrame);
+                FinalVideo.Start();
+                //try
+                //{
+                //    // Display webcam video
+                //    WebcamCtrl.StartPreview();
+                //    WebcamCtrl.StartRecording();
+                //}
+                //catch (Microsoft.Expression.Encoder.SystemErrorException ex)
+                //{
+                //    MessageBox.Show("Device is in use by another application");
+                //}
+            }
+            else
+            {
+                btnConnectWebcam.Content = "CONNECT";
+                if (FinalVideo.IsRunning)
+                {
+                    FinalVideo.Stop();
+                    image1.Source = null;
+                }
+                // Stop the display of webcam video.
+                //WebcamCtrl.StopPreview();
+                //WebcamCtrl.StopRecording();
+            }
+        }
+        #endregion
 
+        #region GetLaptopLocation
         public void GetLaptopLocation()
         {
             // Create the watcher.
@@ -353,19 +238,9 @@ namespace GCS_WPF_2
                 }
             }
         }
+        #endregion
 
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::              Cek apakah folder FlightRecord udh ada            :::
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        public void CheckFolderFlightRecord()
-        {
-            string pathFlightRecord = Environment.CurrentDirectory + @"\FlightRecord\";
-            if (!Directory.Exists(pathFlightRecord))
-            {
-                Directory.CreateDirectory(pathFlightRecord);
-            }
-        }
-
+        #region EverythingAboutMap
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                        Load Map awal                           :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -426,21 +301,66 @@ namespace GCS_WPF_2
                 MessageBox.Show(ex.Message);
             }
         }
-        
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::             Timer utk sinkronisasi transmisi data              :::
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        private void Timer()
+        private void AddCustomPin(string NamaGambar, double latt, double lngg, string teks)
         {
-            timer = new DispatcherTimer();
-            //Interval 900ms dan dimulai saat sudah nunggu 900ms dulu..
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 900);
-            //Interval 900ms dan dimulai saat itu juga
-            //timer.Interval = TimeSpan.FromMilliseconds(900);
-            timer.Tick += new EventHandler(timer_Tick);
-            timer.Start();
+            MapLayer imageLayer = new MapLayer();
+            Image image = new Image();
+            Canvas canvas = new Canvas();
+            TextBlock txt = new TextBlock();
+
+            canvas.Background = null;
+
+            image.Height = 30;
+            image.Width = 30;
+            //Define the URI location of the image
+            BitmapImage myBitmap = new BitmapImage();
+            Uri uri = new Uri("/Resources/" + NamaGambar, UriKind.Relative);
+            myBitmap.BeginInit();
+            myBitmap.UriSource = uri;
+            myBitmap.DecodePixelHeight = 150;
+            myBitmap.EndInit();
+            image.Source = myBitmap;
+            image.Opacity = 1;
+            //image.Stretch = System.Windows.Media.Stretch.Fill;
+
+            txt.Text = teks;
+            txt.FontSize = 15;
+            txt.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+            txt.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.White);
+
+            // Add Child Elements to Canvas
+            // Set Canvas position
+            //Canvas.SetLeft(image, 10);
+            //Canvas.SetTop(image, 10);
+
+            // Add Custom pin to Canvas
+            canvas.Children.Add(image);
+            // Add teks to Canvas
+            Canvas.SetLeft(txt, 30);
+            Canvas.SetTop(txt, 30);
+            canvas.Children.Add(txt);
+
+            Location loc = new Location(latt, lngg);
+            //Center the image around the location specified
+            PositionOrigin position = PositionOrigin.Center;
+            //Add the image to the defined map layer
+            MapLayer.SetPosition(canvas, loc);
+            imageLayer.AddChild(canvas, loc, position);
+            //Add the image layer to the map
+            myMap.Children.Add(imageLayer);
         }
 
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::                Zoom level berubah sesuai slider                :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        private void slider_zoom_map_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            myMap.ZoomLevel = Convert.ToInt32(e.NewValue);
+        }
+
+        #endregion
+
+        #region FlightTime
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                  Timer utk hitung Flight Time                  :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -472,7 +392,9 @@ namespace GCS_WPF_2
             label_minute.Content = string.Format("{0:00}", minute);
             label_hour.Content = string.Format("{0:00}", hour);
         }
+        #endregion
 
+        #region SettingPortBaud
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                  Set comboBox port dan baud rate               :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -494,7 +416,9 @@ namespace GCS_WPF_2
             }
             comboBoxBaud.SelectedIndex = 1;
         }
+        #endregion
 
+        #region DraggableWindow
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::        Supaya kalau border atas di-drag, form bisa gerak       :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -506,24 +430,9 @@ namespace GCS_WPF_2
         {
             App.Current.Shutdown();
         }
+        #endregion
 
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::                Zoom level berubah sesuai slider                :::
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        private void slider_zoom_map_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            myMap.ZoomLevel = Convert.ToInt32(e.NewValue);
-        }
-
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::                  Jika button REFRESH di klik                   :::
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        private void btnRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            //RefreshUI();
-            PortBaudSetting();
-        }
-
+        #region Connect&Stop
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                  Jika button CONNECT/STOP di klik              :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -532,7 +441,6 @@ namespace GCS_WPF_2
             if (btnConnect.Content.Equals("CONNECT"))
             {
                 PlotGraphic();
-                db = new DBHelper();
                 ConnectPortBaudAttempt();
                 btnConnect.Content = "STOP";
                 //Mulai Timer
@@ -567,7 +475,6 @@ namespace GCS_WPF_2
                 db.DeleteAllData("GCS_DB");
             }
         }
-
         private void CloseSerialOnExit()
         {
             try
@@ -611,7 +518,7 @@ namespace GCS_WPF_2
         private void portGCS_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string data_received;
-            
+
             try
             {
                 //data_received adalah baris yang dibaca dari data yang dikirimkan melalui port
@@ -620,12 +527,39 @@ namespace GCS_WPF_2
                 Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
                 Dispatcher.Invoke((Action)(() => BoxDataReceived.Text += data_received + "\n"));
                 Dispatcher.Invoke((Action)(() => PortBaudSetting()));
-                
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show("1 :" + ex.Message);
             }
+        }
+        #endregion
+
+        #region PenerimaanDataDariDrone
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::             Timer utk sinkronisasi transmisi data              :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        private void Timer()
+        {
+            timer = new DispatcherTimer();
+            //Interval 900ms dan dimulai saat sudah nunggu 900ms dulu..
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 900);
+            //Interval 900ms dan dimulai saat itu juga
+            //timer.Interval = TimeSpan.FromMilliseconds(900);
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Start();
+        }
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::Yang dilakukan jika timer sudah sesuai dengan waktu yg ditentukan::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        void timer_Tick(object sender, EventArgs e)
+        {
+            GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
+            TrackRoute("GCS_DB");
+            TrackDroneIcon();
+            position = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
+            LoadMap();
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -694,7 +628,7 @@ namespace GCS_WPF_2
                     batt_icon_low.Visibility = Visibility.Visible;
                     batt_3.Visibility = Visibility.Hidden;
                 }
-                
+
                 //db.GetData();
                 //txtAlt.Content = Convert.ToString(altitude);
                 //txtYaw.Content = Convert.ToString(yaw);
@@ -708,39 +642,20 @@ namespace GCS_WPF_2
                 MessageBox.Show("2 : " + ex.Message);
             }
         }
+        #endregion
 
+        #region FlightRecord&Log
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::Yang dilakukan jika timer sudah sesuai dengan waktu yg ditentukan::
+        //::              Cek apakah folder FlightRecord udh ada            :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        void timer_Tick(object sender, EventArgs e)
+        public void CheckFolderFlightRecord()
         {
-            GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
-            TrackRoute("GCS_DB");
-            TrackDroneIcon();
-            position = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
-            LoadMap();
+            string pathFlightRecord = Environment.CurrentDirectory + @"\FlightRecord\";
+            if (!Directory.Exists(pathFlightRecord))
+            {
+                Directory.CreateDirectory(pathFlightRecord);
+            }
         }
-
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::  Buka directory > Process.Start(Environment.CurrentDirectory + @"\FlightRecord\"); :::
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-        //Add polygon manual, koordinat sudah dikasih..
-        private void addNewPolygon()
-        {
-            MapPolygon polygon = new MapPolygon();
-            polygon.Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Blue);
-            polygon.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Green);
-            polygon.StrokeThickness = 5;
-            polygon.Opacity = 0.7;
-            polygon.Locations = new LocationCollection() {
-                new Location(47.6424,-122.3219),
-                new Location(47.8424,-122.1747),
-                new Location(47.5814,-122.1747)};
-
-            myMap.Children.Add(polygon);
-        }
-
         private void btnOpenLogFile_Click(object sender, RoutedEventArgs e)
         {
             string filename = Convert.ToString(ComboBoxFlightRecord.SelectedItem);
@@ -756,9 +671,9 @@ namespace GCS_WPF_2
                 xlApp.Visible = true;
                 myMap.Children.Clear();
                 string dbTarget = filename.Substring(0, 37);
-                TrackRoute("GCS_DB_"+dbTarget);
+                TrackRoute("GCS_DB_" + dbTarget);
                 int idAkhir = GetLastID("GCS_DB_" + dbTarget);
-                string LatAwal = db.GetLat("GCS_DB_"+dbTarget,1);
+                string LatAwal = db.GetLat("GCS_DB_" + dbTarget, 1);
                 string LngAwal = db.GetLng("GCS_DB_" + dbTarget, 1);
                 string LatAkhir = db.GetLat("GCS_DB_" + dbTarget, idAkhir);
                 string LngAkhir = db.GetLng("GCS_DB_" + dbTarget, idAkhir);
@@ -776,99 +691,67 @@ namespace GCS_WPF_2
                 myMap.Center = locAwal;
             }
         }
+        #endregion
 
-        private void btnConnectWebcam_Click(object sender, RoutedEventArgs e)
+        #region FlightDistance
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::                   Hitung jarak metode 1                        :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        private double distance(double lat1, double lon1, double lat2, double lon2)
         {
-            if (btnConnectWebcam.Content.Equals("CONNECT"))
-            {
-                btnConnectWebcam.Content = "STOP";
-                FinalVideo = new VideoCaptureDevice(VideoCaptureDevices[VideoDevicesComboBox.SelectedIndex].MonikerString);
-                FinalVideo.NewFrame += new NewFrameEventHandler(FinalVideo_NewFrame);
-                FinalVideo.Start();
-                //try
-                //{
-                //    // Display webcam video
-                //    WebcamCtrl.StartPreview();
-                //    WebcamCtrl.StartRecording();
-                //}
-                //catch (Microsoft.Expression.Encoder.SystemErrorException ex)
-                //{
-                //    MessageBox.Show("Device is in use by another application");
-                //}
-            }
-            else
-            {
-                btnConnectWebcam.Content = "CONNECT";
-                if (FinalVideo.IsRunning)
-                {
-                    FinalVideo.Stop();
-                    image1.Source = null;
-                }
-                // Stop the display of webcam video.
-                //WebcamCtrl.StopPreview();
-                //WebcamCtrl.StopRecording();
-            }
+            double theta = lon1 - lon2;
+            double dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) + Math.Cos(deg2rad(lat1)) * Math.Cos(deg2rad(lat2)) * Math.Cos(deg2rad(theta));
+            dist = Math.Acos(dist);
+            dist = rad2deg(dist);
+            dist = dist * 60 * 1.1515;
+            //if (unit == 'K')
+            //{
+            dist = dist * 1.609344;
+            //}
+            //else if (unit == 'N')
+            //{
+            //    dist = dist * 0.8684;
+            //}
+            return (dist);
+        }
+        private double deg2rad(double deg)
+        {
+            return (deg * Math.PI / 180.0);
+        }
+        private double rad2deg(double rad)
+        {
+            return (rad / Math.PI * 180.0);
         }
 
-        private void btnWaypoint_Click(object sender, RoutedEventArgs e)
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::                   Hitung jarak metode 2                        :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        public static double DistanceBetweenPlaces(double lat1, double lon1, double lat2, double lon2)
         {
-            if (portGCS.IsOpen == false)
-            {
-                MessageBox.Show("Silakan connect terlebih dahulu ke port controller", "Belum connect!");
-            }
-            else
-            {
-                portGCS.Write("waypoint:");
-            }
-        }
+            double R = 6371; // KM
 
-        private void btnStartWaypoint_Click(object sender, RoutedEventArgs e)
+            double sLat1 = Math.Sin(Radians(lat1));
+            double sLat2 = Math.Sin(Radians(lat2));
+            double cLat1 = Math.Cos(Radians(lat1));
+            double cLat2 = Math.Cos(Radians(lat2));
+            double cLon = Math.Cos(Radians(lon1) - Radians(lon2));
+
+            double cosD = sLat1 * sLat2 + cLat1 * cLat2 * cLon;
+
+            double d = Math.Acos(cosD);
+
+            double dist = R * d;
+
+            return dist;
+        }
+        public static double Radians(double x)
         {
-            portGCS.Write("startWaypoint:");
-            //SendDataKeController("GCS_DB");
-            //TrackRoute("GCS_DB");
-            //TrackDroneIcon();
+            const double PIx = Math.PI;
+            return x * PIx / 180;
         }
+        #endregion
 
-        private void btnMaxHUD_Click(object sender, RoutedEventArgs e)
-        {
-            this.Panel_HUD.Children.Remove(this.HUD_ATT);
-            HUD_Big wind = new HUD_Big(this.HUD_ATT);
-            wind.Show();
-        }
-
-        private void SendDataKeController(string namaTabel)
-        {
-            LocationCollection locCollection = new LocationCollection();
-            List<GCS_DB_MODEL> listDBModel = db.getAllData(namaTabel);
-            foreach (GCS_DB_MODEL item in listDBModel)
-            {
-                double Lat, Lng;
-                Lat = Convert.ToDouble(item.Lat);
-                string lat = string.Format("{0:0.000000}", Lat);
-                Lng = Convert.ToDouble(item.Lng);
-                string lng = string.Format("{0:0.000000}", Lng);
-                portGCS.Write(lat + ":");
-                portGCS.Write(lng + ":");
-                //locCollection.Add(new Location(Lat, Lng));
-            }
-        }
-
-        private void btnSendCommand_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                string penanda = "tanda>";
-                portGCS.Write(penanda);
-                string kata2 = BoxCommand.Text;
-                portGCS.Write(kata2);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
+        #region DroneTrackingDiMap
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::   Polyline yang muncul, sesuai dengan koordinat yang diterima, utk ngetrack  ::
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -923,55 +806,6 @@ namespace GCS_WPF_2
             Location pos = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
             pin.Location = pos;
             myMap.Children.Add(pin);
-        }
-
-        private void AddCustomPin(string NamaGambar, double latt, double lngg, string teks)
-        {
-            MapLayer imageLayer = new MapLayer();
-            Image image = new Image();
-            Canvas canvas = new Canvas();
-            TextBlock txt = new TextBlock();
-
-            canvas.Background = null;
-
-            image.Height = 30;
-            image.Width = 30;
-            //Define the URI location of the image
-            BitmapImage myBitmap = new BitmapImage();
-            Uri uri = new Uri("/Resources/"+NamaGambar, UriKind.Relative);
-            myBitmap.BeginInit();
-            myBitmap.UriSource = uri;
-            myBitmap.DecodePixelHeight = 150;
-            myBitmap.EndInit();
-            image.Source = myBitmap;
-            image.Opacity = 1;
-            //image.Stretch = System.Windows.Media.Stretch.Fill;
-
-            txt.Text = teks;
-            txt.FontSize = 15;
-            txt.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
-            txt.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.White);
-
-            // Add Child Elements to Canvas
-            // Set Canvas position
-            //Canvas.SetLeft(image, 10);
-            //Canvas.SetTop(image, 10);
-
-            // Add Custom pin to Canvas
-            canvas.Children.Add(image);
-            // Add teks to Canvas
-            Canvas.SetLeft(txt, 30);
-            Canvas.SetTop(txt, 30);
-            canvas.Children.Add(txt);
-
-            Location loc = new Location(latt, lngg);
-            //Center the image around the location specified
-            PositionOrigin position = PositionOrigin.Center;
-            //Add the image to the defined map layer
-            MapLayer.SetPosition(canvas, loc);
-            imageLayer.AddChild(canvas, loc, position);
-            //Add the image layer to the map
-            myMap.Children.Add(imageLayer);
         }
 
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1049,7 +883,31 @@ namespace GCS_WPF_2
             //Add the image layer to the map
             myMap.Children.Add(imageLayer);
         }
+        #endregion
 
+        #region Waypoint
+        private void btnWaypoint_Click(object sender, RoutedEventArgs e)
+        {
+            if (portGCS.IsOpen == false)
+            {
+                MessageBox.Show("Silakan connect terlebih dahulu ke port controller", "Belum connect!");
+            }
+            else
+            {
+                portGCS.Write("waypoint:");
+            }
+        }
+
+        private void btnStartWaypoint_Click(object sender, RoutedEventArgs e)
+        {
+            portGCS.Write("startWaypoint:");
+            //SendDataKeController("GCS_DB");
+            //TrackRoute("GCS_DB");
+            //TrackDroneIcon();
+        }
+        #endregion
+
+        #region LainLain
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                     Hitung jumlah data di DB                   :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1057,62 +915,6 @@ namespace GCS_WPF_2
         {
             int count = db.GetLastID(namaTabel);
             return count;
-        }
-
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::                   Hitung jarak metode 1                        :::
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        private double distance(double lat1, double lon1, double lat2, double lon2)
-        {
-            double theta = lon1 - lon2;
-            double dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) + Math.Cos(deg2rad(lat1)) * Math.Cos(deg2rad(lat2)) * Math.Cos(deg2rad(theta));
-            dist = Math.Acos(dist);
-            dist = rad2deg(dist);
-            dist = dist * 60 * 1.1515;
-            //if (unit == 'K')
-            //{
-            dist = dist * 1.609344;
-            //}
-            //else if (unit == 'N')
-            //{
-            //    dist = dist * 0.8684;
-            //}
-            return (dist);
-        }
-        private double deg2rad(double deg)
-        {
-            return (deg * Math.PI / 180.0);
-        }
-        private double rad2deg(double rad)
-        {
-            return (rad / Math.PI * 180.0);
-        }
-
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        //::                   Hitung jarak metode 2                        :::
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        public static double DistanceBetweenPlaces(double lat1, double lon1, double lat2, double lon2)
-        {
-            double R = 6371; // KM
-
-            double sLat1 = Math.Sin(Radians(lat1));
-            double sLat2 = Math.Sin(Radians(lat2));
-            double cLat1 = Math.Cos(Radians(lat1));
-            double cLat2 = Math.Cos(Radians(lat2));
-            double cLon = Math.Cos(Radians(lon1) - Radians(lon2));
-
-            double cosD = sLat1 * sLat2 + cLat1 * cLat2 * cLon;
-
-            double d = Math.Acos(cosD);
-
-            double dist = R * d;
-
-            return dist;
-        }
-        public static double Radians(double x)
-        {
-            const double PIx = Math.PI;
-            return x * PIx / 180;
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1167,5 +969,120 @@ namespace GCS_WPF_2
 
             BoxDataReceived.Text = "Data received goes here...";
         }
+
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::                  Jika button REFRESH di klik                   :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            //RefreshUI();
+            PortBaudSetting();
+        }
+
+        private void btnMaxHUD_Click(object sender, RoutedEventArgs e)
+        {
+            this.Panel_HUD.Children.Remove(this.HUD_ATT);
+            HUD_Big wind = new HUD_Big(this.HUD_ATT);
+            wind.Show();
+        }
+
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::  Buka directory > Process.Start(Environment.CurrentDirectory + @"\FlightRecord\"); :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+        //Add polygon manual, koordinat sudah dikasih..
+        private void addNewPolygon()
+        {
+            MapPolygon polygon = new MapPolygon();
+            polygon.Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Blue);
+            polygon.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Green);
+            polygon.StrokeThickness = 5;
+            polygon.Opacity = 0.7;
+            polygon.Locations = new LocationCollection() {
+                new Location(47.6424,-122.3219),
+                new Location(47.8424,-122.1747),
+                new Location(47.5814,-122.1747)};
+
+            myMap.Children.Add(polygon);
+        }
+
+        private void btnSendCommand_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string penanda = "tanda>";
+                portGCS.Write(penanda);
+                string kata2 = BoxCommand.Text;
+                portGCS.Write(kata2);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        #endregion
+
+        private void btnCalibrate_Click(object sender, RoutedEventArgs e)
+        {
+            if (portGCS.IsOpen)
+            {
+                try
+                {
+                    portGCS.Write("calibrate");
+                }catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            
+        }
+
+        private void btnLanding_Click(object sender, RoutedEventArgs e)
+        {
+            if (portGCS.IsOpen)
+            {
+                try
+                {
+                    portGCS.Write("landing");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnTakeOff_Click(object sender, RoutedEventArgs e)
+        {
+            if (portGCS.IsOpen)
+            {
+                try
+                {
+                    portGCS.Write("takeoff");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void SendDataKeController(string namaTabel)
+        {
+            LocationCollection locCollection = new LocationCollection();
+            List<GCS_DB_MODEL> listDBModel = db.getAllData(namaTabel);
+            foreach (GCS_DB_MODEL item in listDBModel)
+            {
+                double Lat, Lng;
+                Lat = Convert.ToDouble(item.Lat);
+                string lat = string.Format("{0:0.000000}", Lat);
+                Lng = Convert.ToDouble(item.Lng);
+                string lng = string.Format("{0:0.000000}", Lng);
+                portGCS.Write(lat + ":");
+                portGCS.Write(lng + ":");
+                //locCollection.Add(new Location(Lat, Lng));
+            }
+        }
+
     }
 }
