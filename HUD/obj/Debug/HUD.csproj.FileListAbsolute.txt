@@ -10,3 +10,16 @@ E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.Properties.Resourc
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.csproj.GenerateResource.Cache
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.dll
 E:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.pdb
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\bin\Debug\HUD.dll
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\bin\Debug\HUD.pdb
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.csprojResolveAssemblyReference.cache
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUDControl.g.cs
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\GeneratedInternalTypeHelper.g.cs
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD_MarkupCompile.cache
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD_MarkupCompile.lref
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUDControl.baml
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.g.resources
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.Properties.Resources.resources
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.csproj.GenerateResource.Cache
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.dll
+F:\Kuliah\PROJECT\GAMAFORCE\Tugas\GCS_WPF_2\HUD\obj\Debug\HUD.pdb

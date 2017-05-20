@@ -59,6 +59,10 @@ namespace GCS_WPF_2
         LocationCollection locCollection;
 
         private static double altitude, yaw, pitch, roll, Lat, Lng, jarak_cetak=0, battery;
+        double[] lat = new double[4];
+        double[] lng = new double[4];
+        double lat1, lat2, lat3, lat4;
+        double lng1, lng2, lng3, lng4;
         #endregion
 
         public MainWindow()
@@ -67,7 +71,7 @@ namespace GCS_WPF_2
             db = new DBHelper();
             //InitiateAttitudeIndicator();
             ConnectingWebcam2();
-            GetLaptopLocation();
+            //GetLaptopLocation();
             CheckFolderFlightRecord();
             batt_icon.Visibility = Visibility.Visible;
             batt_icon_warning.Visibility = Visibility.Hidden;
@@ -248,7 +252,7 @@ namespace GCS_WPF_2
         {
             //Pushpin pin = new Pushpin();
             //pin.Location = position;
-            myMap.Center = position;
+            //myMap.Center = position; //center position sesuai lokasi drone
             //myMap.ZoomLevel = zoom;
             //myMap.Children.Add(pin);
             slider_zoom_map.Value = zoom;
@@ -555,10 +559,10 @@ namespace GCS_WPF_2
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         void timer_Tick(object sender, EventArgs e)
         {
-            GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
-            TrackRoute("GCS_DB");
-            TrackDroneIcon();
-            position = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
+            //GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
+            //TrackRoute("GCS_DB");
+            //TrackDroneIcon();
+            //position = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
             LoadMap();
         }
 
@@ -571,71 +575,168 @@ namespace GCS_WPF_2
             {
                 string[] data;
                 BoxDataReceived.ScrollToEnd();
-                //String yang diterima dari port dipisah menggunakan pemisah yang disepakati
-                data = data_received.Split(' ');
-                //Data yang diterima di convert ke tipe data yang sesuai
-                altitude = Convert.ToInt32(data[0]);
-                yaw = Convert.ToInt32(data[1]);
-                pitch = Convert.ToInt32(data[2]);
-                roll = Convert.ToInt32(data[3]);
-                Lat = Convert.ToDouble(data[4]);
-                Lng = Convert.ToDouble(data[5]);
-                string test = data[6];
-                battery = Convert.ToDouble(data[7]);
                 string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
-
-                label_Test.Content = test;
-                db.InsertData(Convert.ToString(altitude), Convert.ToString(yaw), Convert.ToString(pitch),
-                    Convert.ToString(roll), Convert.ToString(Lat), Convert.ToString(Lng), time);
-
-                //Show data dari DB ke label
-                GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
-                txtAlt.Content = model1.Alt;
-                txtYaw.Content = model1.Yaw;
-                txtPitch.Content = model1.Pitch;
-                txtRoll.Content = model1.Roll;
-                txtLat.Content = model1.Lat;
-                txtLng.Content = model1.Lng;
-
-                Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
-                Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
-                Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
-
-                label_batt.Content = Convert.ToString(battery) + "%";
-                if (battery >= 75)
+                #region TerimaDataAxellOld
+                ////String yang diterima dari port dipisah menggunakan pemisah yang disepakati
+                //data = data_received.Split(' ');
+                ////Data yang diterima di convert ke tipe data yang sesuai
+                //altitude = Convert.ToInt32(data[0]);
+                //yaw = Convert.ToInt32(data[1]);
+                //pitch = Convert.ToInt32(data[2]);
+                //roll = Convert.ToInt32(data[3]);
+                //Lat = Convert.ToDouble(data[4]);
+                //Lng = Convert.ToDouble(data[5]);
+                //string test = data[6];
+                //battery = Convert.ToDouble(data[7]);
+                //label_Test.Content = test;
+                #endregion
+                data = data_received.Split('#');
+                //MessageBox.Show(data[0].ToString());
+                //Waypoint
+                if (data[0].ToString().Equals("@20"))
                 {
-                    batt_icon.Visibility = Visibility.Visible;
-                    batt_icon_warning.Visibility = Visibility.Hidden;
-                    batt_icon_low.Visibility = Visibility.Hidden;
-                    batt_1.Visibility = Visibility.Visible; batt_2.Visibility = Visibility.Visible;
-                    batt_3.Visibility = Visibility.Visible; batt_4.Visibility = Visibility.Visible;
-                }
-                if (battery < 75)
-                {
-                    batt_1.Visibility = Visibility.Hidden;
-                }
-                if (battery < 50)
-                {
-                    batt_icon.Visibility = Visibility.Hidden;
-                    batt_icon_warning.Visibility = Visibility.Visible;
-                    batt_icon_low.Visibility = Visibility.Hidden;
-                    batt_2.Visibility = Visibility.Hidden;
-                }
-                if (battery < 25)
-                {
-                    batt_icon.Visibility = Visibility.Hidden;
-                    batt_icon_warning.Visibility = Visibility.Hidden;
-                    batt_icon_low.Visibility = Visibility.Visible;
-                    batt_3.Visibility = Visibility.Hidden;
-                }
 
-                //db.GetData();
-                //txtAlt.Content = Convert.ToString(altitude);
-                //txtYaw.Content = Convert.ToString(yaw);
-                //txtPitch.Content = Convert.ToString(pitch);
-                //txtRoll.Content = Convert.ToString(roll);
-                //txtLat.Content = Convert.ToString(Lat);
-                //txtLng.Content = Convert.ToString(Lng);
+                    int x = 1, y = 2;
+                    //lat1 = Convert.ToDouble(data[1]);
+                    //lng1 = Convert.ToDouble(data[2]);
+                    //lat2 = Convert.ToDouble(data[3]);
+                    //lng2 = Convert.ToDouble(data[4]);
+                    //lat3 = Convert.ToDouble(data[5]);
+                    //lng3 = Convert.ToDouble(data[6]);
+                    //lat4 = Convert.ToDouble(data[7]);
+                    //lng4 = Convert.ToDouble(data[8]);
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        lat[i] = Convert.ToDouble(data[x]);
+                        lng[i] = Convert.ToDouble(data[y]);
+                        x += 2; y += 2;
+                        int wayPoint = i + 1;
+                        AddCustomPin("pin.png", lat[i], lng[i], "Waypoint ke-" + wayPoint);
+                    }
+                    lat1 = lat[0]; lat2 = lat[1]; lat3 = lat[2]; lat4 = lat[3];
+                    lng1 = lng[0]; lng2 = lng[1]; lng3 = lng[2]; lng4 = lng[3];
+                    //MessageBox.Show(lat1.ToString() + "," + lng1.ToString()
+                    //    + "\n" + lat2.ToString() + "," + lng2.ToString()
+                    //    + "\n" + lat3.ToString() + "," + lng3.ToString()
+                    //    + "\n" + lat4.ToString() + "," + lng4.ToString());
+                }
+                //Data biasa
+                else if (data[0].ToString().Equals("@0"))
+                {
+                    altitude = Convert.ToInt32(data[1]);
+                    yaw = Convert.ToInt32(data[2]);
+                    pitch = Convert.ToInt32(data[3]);
+                    roll = Convert.ToInt32(data[4]);
+                    Lat = Convert.ToDouble(data[5]);
+                    Lng = Convert.ToDouble(data[6]);
+                    //MessageBox.Show(Lat.ToString() + "," + Lng.ToString());
+                    battery = Convert.ToDouble(data[7]);
+                    //db.InsertData(Convert.ToString(altitude), Convert.ToString(yaw), Convert.ToString(pitch),
+                    //    Convert.ToString(roll), Convert.ToString(Lat), Convert.ToString(Lng), time);
+                    //Show data dari DB ke label
+                    //GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
+                    //txtAlt.Content = model1.Alt;
+                    //txtYaw.Content = model1.Yaw;
+                    //txtPitch.Content = model1.Pitch;
+                    //txtRoll.Content = model1.Roll;
+                    //txtLat.Content = model1.Lat;
+                    //txtLng.Content = model1.Lng;
+                    txtAlt.Content = altitude.ToString();
+                    txtYaw.Content = yaw.ToString();
+                    txtPitch.Content = pitch.ToString();
+                    txtRoll.Content = roll.ToString();
+                    txtLat.Content = Lat.ToString();
+                    txtLng.Content = Lng.ToString();
+
+                    TrackDroneIcon(Lat, Lng);
+                    position = new Location(Lat, Lng);
+                    myMap.Center = position; //center position sesuai lokasi drone
+                    myMap.ZoomLevel = 25;
+
+                    double cekToleransi1 = 0, cekToleransi2 = 0, cekToleransi3 = 0, cekToleransi4 = 0;
+
+                    cekToleransi1 = distance(Lat, Lng, lat1, lng1);
+                    cekToleransi2 = distance(Lat, Lng, lat2, lng2);
+                    cekToleransi3 = distance(Lat, Lng, lat3, lng3);
+                    cekToleransi4 = distance(Lat, Lng, lat4, lng4);
+                    MessageBox.Show(cekToleransi1.ToString() + "\n" + cekToleransi2.ToString() + "\n" + cekToleransi3.ToString() + "\n" + cekToleransi4.ToString());
+
+                    //double rLat1 = lat1 + 0.000018; double rLng1 = lng1 + 0.000018;
+                    //double rLat2 = lat2 + 0.000018; double rLng2 = lng2 + 0.000018;
+                    //double rLat3 = lat3 + 0.000018; double rLng3 = lng3 + 0.000018;
+                    //double rLat4 = lat4 + 0.000018; double rLng4 = lng4 + 0.000018;
+                    //double disLat = Lat * Lat; double disLng = Lng * Lng;
+                    //double dLat1 = rLat1 * rLat1; double dLng1 = rLng1 * rLng1;
+                    //double dLat2 = rLat2 * rLat2; double dLng2 = rLng2 * rLng2;
+                    //double dLat3 = rLat3 * rLat3; double dLng3 = rLng3 * rLng3;
+                    //double dLat4 = rLat4 * rLat4; double dLng4 = rLng4 * rLng4;
+                    
+                    if (cekToleransi1<=0.004)
+                    {
+                        AddCustomPin("pinHome.png", lat1, lng1, "");
+                        //MessageBox.Show("LatLng1 SUKSES");
+                    }
+                    if (cekToleransi2<=0.004)
+                    {
+                        AddCustomPin("pinHome.png", lat2, lng2, "");
+                        //MessageBox.Show("LatLng2 SUKSES");
+                    }
+                    if (cekToleransi3 <= 0.004)
+                    {
+                        AddCustomPin("pinHome.png", lat3, lng3, "");
+                        //MessageBox.Show("LatLng3 SUKSES");
+                    }
+                    if (cekToleransi4 <= 0.004)
+                    {
+                        AddCustomPin("pinHome.png", lat4, lng4, "");
+                        //MessageBox.Show("LatLng4 SUKSES");
+                    }
+
+                    #region HUD_Control
+                    Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
+                    Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
+                    Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
+                    #endregion
+                    
+                    #region battery
+                    label_batt.Content = Convert.ToString(battery) + "%";
+                    if (battery >= 75)
+                    {
+                        batt_icon.Visibility = Visibility.Visible;
+                        batt_icon_warning.Visibility = Visibility.Hidden;
+                        batt_icon_low.Visibility = Visibility.Hidden;
+                        batt_1.Visibility = Visibility.Visible; batt_2.Visibility = Visibility.Visible;
+                        batt_3.Visibility = Visibility.Visible; batt_4.Visibility = Visibility.Visible;
+                    }
+                    if (battery < 75)
+                    {
+                        batt_1.Visibility = Visibility.Hidden;
+                    }
+                    if (battery < 50)
+                    {
+                        batt_icon.Visibility = Visibility.Hidden;
+                        batt_icon_warning.Visibility = Visibility.Visible;
+                        batt_icon_low.Visibility = Visibility.Hidden;
+                        batt_2.Visibility = Visibility.Hidden;
+                    }
+                    if (battery < 25)
+                    {
+                        batt_icon.Visibility = Visibility.Hidden;
+                        batt_icon_warning.Visibility = Visibility.Hidden;
+                        batt_icon_low.Visibility = Visibility.Visible;
+                        batt_3.Visibility = Visibility.Hidden;
+                    }
+                    #endregion
+
+                    //db.GetData();
+                    //txtAlt.Content = Convert.ToString(altitude);
+                    //txtYaw.Content = Convert.ToString(yaw);
+                    //txtPitch.Content = Convert.ToString(pitch);
+                    //txtRoll.Content = Convert.ToString(roll);
+                    //txtLat.Content = Convert.ToString(Lat);
+                    //txtLng.Content = Convert.ToString(Lng);
+                }
             }
             catch (Exception ex)
             {
@@ -670,25 +771,25 @@ namespace GCS_WPF_2
                 Excel.Workbook wb = xlApp.Workbooks.Open(Environment.CurrentDirectory + @"\FlightRecord\" + filename);
                 xlApp.Visible = true;
                 myMap.Children.Clear();
-                string dbTarget = filename.Substring(0, 37);
-                TrackRoute("GCS_DB_" + dbTarget);
-                int idAkhir = GetLastID("GCS_DB_" + dbTarget);
-                string LatAwal = db.GetLat("GCS_DB_" + dbTarget, 1);
-                string LngAwal = db.GetLng("GCS_DB_" + dbTarget, 1);
-                string LatAkhir = db.GetLat("GCS_DB_" + dbTarget, idAkhir);
-                string LngAkhir = db.GetLng("GCS_DB_" + dbTarget, idAkhir);
-                Pushpin pinAwal = new Pushpin();
-                Pushpin pinAkhir = new Pushpin();
-                Location locAwal = new Location(Convert.ToDouble(LatAwal), Convert.ToDouble(LngAwal));
-                pinAwal.Location = locAwal;
-                ToolTipService.SetToolTip(pinAwal, "START");
-                Location locAkhir = new Location(Convert.ToDouble(LatAkhir), Convert.ToDouble(LngAkhir));
-                pinAkhir.Location = locAkhir;
-                ToolTipService.SetToolTip(pinAkhir, "FINISH");
-                myMap.Children.Add(pinAwal);
-                myMap.Children.Add(pinAkhir);
-                myMap.ZoomLevel = zoom;
-                myMap.Center = locAwal;
+                //string dbTarget = filename.Substring(0, 37);
+                //TrackRoute("GCS_DB_" + dbTarget);
+                //int idAkhir = GetLastID("GCS_DB_" + dbTarget);
+                //string LatAwal = db.GetLat("GCS_DB_" + dbTarget, 1);
+                //string LngAwal = db.GetLng("GCS_DB_" + dbTarget, 1);
+                //string LatAkhir = db.GetLat("GCS_DB_" + dbTarget, idAkhir);
+                //string LngAkhir = db.GetLng("GCS_DB_" + dbTarget, idAkhir);
+                //Pushpin pinAwal = new Pushpin();
+                //Pushpin pinAkhir = new Pushpin();
+                //Location locAwal = new Location(Convert.ToDouble(LatAwal), Convert.ToDouble(LngAwal));
+                //pinAwal.Location = locAwal;
+                //ToolTipService.SetToolTip(pinAwal, "START");
+                //Location locAkhir = new Location(Convert.ToDouble(LatAkhir), Convert.ToDouble(LngAkhir));
+                //pinAkhir.Location = locAkhir;
+                //ToolTipService.SetToolTip(pinAkhir, "FINISH");
+                //myMap.Children.Add(pinAwal);
+                //myMap.Children.Add(pinAkhir);
+                //myMap.ZoomLevel = zoom;
+                //myMap.Center = locAwal;
             }
         }
         #endregion
@@ -773,6 +874,19 @@ namespace GCS_WPF_2
             polyline.Locations = locCollection;
             myMap.Children.Add(polyline);
         }
+        //Polyline Baru (bukan dari DB)
+        private void TrackRoute2()
+        {
+            MapPolyline polyline = new MapPolyline();
+            polyline.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Blue);
+            polyline.StrokeThickness = 5;
+            polyline.Opacity = 1;
+            locCollection = new LocationCollection();
+            locCollection.Add(new Location(Lat, Lng));
+            polyline.Locations = locCollection;
+            myMap.Children.Add(polyline);
+        }
+
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                 Drone pin ngikutin route                       :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -801,18 +915,18 @@ namespace GCS_WPF_2
             {
                 myMap.Children.Remove(es);
             }
-            GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
+            //GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
 
-            Location pos = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
-            pin.Location = pos;
-            myMap.Children.Add(pin);
+            //Location pos = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
+            //pin.Location = pos;
+            //myMap.Children.Add(pin);
         }
 
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::                            Drone icon ngikutin route                         ::
         //::  Isinya juga ada untuk menghitung jarak yang ditempuh dan ditampilkan ke UI  ::
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        private void TrackDroneIcon()
+        private void TrackDroneIcon(double Lat, double Lng)
         {
             MapLayer imageLayer = new MapLayer();
             Image image = new Image();
@@ -859,28 +973,29 @@ namespace GCS_WPF_2
             image.Opacity = 1;
             image.Stretch = System.Windows.Media.Stretch.Fill;
 
-            GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
-            //The map location to place the image at
-            Location loc = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
-            int DataCount = GetLastID("GCS_DB");
-            if (DataCount > 1)
-            {
-                double lat1 = Convert.ToDouble(db.GetLat("GCS_DB", DataCount - 1));
-                double lat2 = Convert.ToDouble(db.GetLat("GCS_DB", DataCount));
-                double lng1 = Convert.ToDouble(db.GetLng("GCS_DB", DataCount - 1));
-                double lng2 = Convert.ToDouble(db.GetLng("GCS_DB", DataCount));
-                double jarak = distance(lat1, lng1, lat2, lng2);
-                jarak_cetak = jarak_cetak + jarak;
-                label_jarak.Content = String.Format("{0:0.000}", jarak_cetak);
-            }
-            //Center the image around the location specified
+            //GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
+            ////The map location to place the image at
+            //Location loc = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
+            Location loc = new Location(Lat, Lng);
+            //int DataCount = GetLastID("GCS_DB");
+            //if (DataCount > 1)
+            //{
+            //    double lat1 = Convert.ToDouble(db.GetLat("GCS_DB", DataCount - 1));
+            //    double lat2 = Convert.ToDouble(db.GetLat("GCS_DB", DataCount));
+            //    double lng1 = Convert.ToDouble(db.GetLng("GCS_DB", DataCount - 1));
+            //    double lng2 = Convert.ToDouble(db.GetLng("GCS_DB", DataCount));
+            //    double jarak = distance(lat1, lng1, lat2, lng2);
+            //    jarak_cetak = jarak_cetak + jarak;
+            //    label_jarak.Content = String.Format("{0:0.000}", jarak_cetak);
+            //}
+            ////Center the image around the location specified
             PositionOrigin position = PositionOrigin.Center;
-            //Add the image to the defined map layer
+            ////Add the image to the defined map layer
             MapLayer.SetPosition(image, loc);
-            //imageLayer.Children.Add(DroneIcon);
+            ////imageLayer.Children.Add(DroneIcon);
             imageLayer.AddChild(image, loc, position);
             imageLayer.Tag = "icon";
-            //Add the image layer to the map
+            ////Add the image layer to the map
             myMap.Children.Add(imageLayer);
         }
         #endregion
@@ -900,7 +1015,8 @@ namespace GCS_WPF_2
 
         private void btnStartWaypoint_Click(object sender, RoutedEventArgs e)
         {
-            portGCS.Write("startWaypoint:");
+
+            //portGCS.Write("startWaypoint:");
             //SendDataKeController("GCS_DB");
             //TrackRoute("GCS_DB");
             //TrackDroneIcon();

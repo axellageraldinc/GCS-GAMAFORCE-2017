@@ -163,7 +163,7 @@
         </Button>
         <ComboBox x:Name="ComboBoxFlightRecord" HorizontalAlignment="Left" Margin="1064,35,0,0" VerticalAlignment="Top" Width="120" Height="21"/>
         <Button x:Name="btnOpenLogFile" Content="OPEN LOG" HorizontalAlignment="Left" Margin="1191,34,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" BorderThickness="1" Template="{DynamicResource btnClickStyle}" Click="btnOpenLogFile_Click"/>
-        <Label x:Name="label_Test" Content="TEST" HorizontalAlignment="Center" Margin="576,655,650,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="White" Width="54"/>
+        <Label x:Name="label_Test" Content="TEST" HorizontalAlignment="Center" Margin="576,655,360,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="White" Width="344"/>
         <Image x:Name="batt_icon_warning" HorizontalAlignment="Left" Height="145" Margin="1127,458,0,0" VerticalAlignment="Top" Width="135" Source="Resources/battery2warning.png" Stretch="Fill"/>
         <Label x:Name="label_batt" Content="100%" HorizontalAlignment="Center" Margin="1161,613,50,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="13.333" Foreground="#FF2D3E50" Width="69" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Image x:Name="batt_icon_low" HorizontalAlignment="Left" Height="145" Margin="1127,458,0,0" VerticalAlignment="Top" Width="135" Source="Resources/battery2low.png" Stretch="Fill"/>
