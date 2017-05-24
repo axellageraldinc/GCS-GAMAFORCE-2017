@@ -474,7 +474,7 @@ namespace GCS_WPF_2
                     Thread CloseDown = new Thread(new ThreadStart(CloseSerialOnExit)); //close port in new thread to avoid hang
                     CloseDown.Start(); //close port in new thread to avoid hang
                 }
-                db.ExcelSave(TimeStart, TotalHours, TotalMinutes, TotalSeconds);
+                //db.ExcelSave(TimeStart, TotalHours, TotalMinutes, TotalSeconds);
                 RefreshUI();
                 db.DeleteAllData("GCS_DB");
             }
@@ -616,11 +616,14 @@ namespace GCS_WPF_2
                     }
                     lat1 = lat[0]; lat2 = lat[1]; lat3 = lat[2]; lat4 = lat[3];
                     lng1 = lng[0]; lng2 = lng[1]; lng3 = lng[2]; lng4 = lng[3];
+                    Location position = new Location(lat1, lng1);
+                    myMap.Center = position;
+                    myMap.ZoomLevel = 17;
                     //MessageBox.Show(lat1.ToString() + "," + lng1.ToString()
                     //    + "\n" + lat2.ToString() + "," + lng2.ToString()
                     //    + "\n" + lat3.ToString() + "," + lng3.ToString()
                     //    + "\n" + lat4.ToString() + "," + lng4.ToString());
-                }
+    }
                 //Data biasa
                 else if (data[0].ToString().Equals("@0"))
                 {
@@ -1003,19 +1006,26 @@ namespace GCS_WPF_2
         #region Waypoint
         private void btnWaypoint_Click(object sender, RoutedEventArgs e)
         {
-            if (portGCS.IsOpen == false)
+            if (portGCS.IsOpen)
             {
-                MessageBox.Show("Silakan connect terlebih dahulu ke port controller", "Belum connect!");
+                try
+                {
+                    portGCS.Write("w");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
             else
             {
-                portGCS.Write("waypoint:");
+                MessageBox.Show("Port belum terkoneksi");
             }
         }
 
         private void btnStartWaypoint_Click(object sender, RoutedEventArgs e)
         {
-
+            
             //portGCS.Write("startWaypoint:");
             //SendDataKeController("GCS_DB");
             //TrackRoute("GCS_DB");
@@ -1126,10 +1136,8 @@ namespace GCS_WPF_2
         {
             try
             {
-                string penanda = "tanda>";
-                portGCS.Write(penanda);
-                string kata2 = BoxCommand.Text;
-                portGCS.Write(kata2);
+                string kata = BoxCommand.Text;
+                portGCS.Write(kata);
             }
             catch (Exception ex)
             {
@@ -1144,11 +1152,15 @@ namespace GCS_WPF_2
             {
                 try
                 {
-                    portGCS.Write("calibrate");
+                    portGCS.Write("c");
                 }catch(Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
+            }
+            else
+            {
+                MessageBox.Show("Port belum terkoneksi");
             }
             
         }
@@ -1159,12 +1171,16 @@ namespace GCS_WPF_2
             {
                 try
                 {
-                    portGCS.Write("landing");
+                    portGCS.Write("l");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
+            }
+            else
+            {
+                MessageBox.Show("Port belum terkoneksi");
             }
         }
 
@@ -1174,12 +1190,16 @@ namespace GCS_WPF_2
             {
                 try
                 {
-                    portGCS.Write("takeoff");
+                    portGCS.Write("t");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
+            }
+            else
+            {
+                MessageBox.Show("Port belum terkoneksi");
             }
         }
 
