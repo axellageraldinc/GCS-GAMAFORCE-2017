@@ -29,6 +29,7 @@ using AForge.Video.DirectShow;
 using AForge.Video;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
 using Microsoft.Research.DynamicDataDisplay;
+using System.Globalization;
 
 namespace GCS_WPF_2
 {
@@ -47,7 +48,7 @@ namespace GCS_WPF_2
 
         private static Location position = new Location(-7.778301, 110.374690);
         List<MapPolyline> listPolyline;
-        private static int zoom = 15, second=0, minute=0, hour=0, i=1;
+        private static int zoom = 17, second=0, minute=0, hour=0, i=1;
         double x;
         private string TimeStart;
         private DateTime start, stop;
@@ -68,6 +69,10 @@ namespace GCS_WPF_2
         public MainWindow()
         {
             InitializeComponent();
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
             db = new DBHelper();
             //InitiateAttitudeIndicator();
             ConnectingWebcam2();
@@ -281,8 +286,15 @@ namespace GCS_WPF_2
             //Ambil latitude dan longitude dari pushpin
             double Latitude = pin.Location.Latitude;
             double Longitude = pin.Location.Longitude;
+            if (i == 5)
+            {
+                i = 1;
+                //myMap.Children.Clear();
+                Image image = new Image();
+                removePin(image);
+            }
+            lat[i-1] = Latitude; lng[i-1] = Longitude;
             AddCustomPin("pin.png", Latitude, Longitude, "Point ke-"+i);
-            i++;
             //BoxTestSerial.Text = (string.Format("{0:0.000000}", Latitude) + "," + string.Format("{0:0.000000}", Longitude));
             //Kirim latitude dan longitude ke controller
             try
@@ -292,10 +304,18 @@ namespace GCS_WPF_2
                 //portGCS.Write(b, 0, 4);
                 //portGCS.Write("SEMPAK:");
                 //portGCS.Write("waypoint:");
+                if (i == 4)
+                {
+                    string datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}#{2:0.0000000}#{3:0.0000000}#{4:0.0000000}#{5:0.0000000}#{6:0.0000000}#{7:0.0000000}*",
+                        new object[] { this.lat[0], this.lng[0], this.lat[1], this.lng[1], this.lat[2], this.lng[2], this.lat[3], this.lng[3] });
+                    portGCS.Write(datapoint);
+                    Console.WriteLine(datapoint);
+                }
+                i++;
                 string lat = string.Format("{0:0.000000}", Latitude);
-                portGCS.Write(lat + ":");
+                //portGCS.Write(lat + ":");
                 string lng = string.Format("{0:0.000000}", Longitude);
-                portGCS.Write(lng + ":");
+                //portGCS.Write(lng + ":");
                 label_Test.Content = lat + "," + lng;
                 string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
                 //db.InsertData("", "", "", "", Convert.ToString(lat), Convert.ToString(lng), time);
@@ -507,6 +527,8 @@ namespace GCS_WPF_2
                 portGCS.PortName = Convert.ToString(comboBoxPort.SelectedItem);
                 //baud rate sesuai yang dipilih dari combobox
                 portGCS.BaudRate = Convert.ToInt32(comboBoxBaud.SelectedItem);
+                Console.WriteLine(portGCS.BaudRate);
+                Console.WriteLine(portGCS.PortName);
                 portGCS.Open();
                 //Data yang diterima, dioperasikan di method portGCS_DataReceived
                 portGCS.DataReceived += new SerialDataReceivedEventHandler(portGCS_DataReceived);
@@ -530,7 +552,7 @@ namespace GCS_WPF_2
                 //data_received akan diolah di method TerimaData
                 Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
                 Dispatcher.Invoke((Action)(() => BoxDataReceived.Text += data_received + "\n"));
-                Dispatcher.Invoke((Action)(() => PortBaudSetting()));
+                //Dispatcher.Invoke((Action)(() => PortBaudSetting()));
 
             }
             catch (Exception ex)
@@ -590,9 +612,12 @@ namespace GCS_WPF_2
                 //battery = Convert.ToDouble(data[7]);
                 //label_Test.Content = test;
                 #endregion
+                data_received = Convert.ToString(data_received);
                 data = data_received.Split('#');
                 //MessageBox.Show(data[0].ToString());
                 //Waypoint
+                //Console.WriteLine(data_received);
+                //Console.WriteLine(data[1]);
                 if (data[0].ToString().Equals("@20"))
                 {
 
@@ -627,14 +652,14 @@ namespace GCS_WPF_2
                 //Data biasa
                 else if (data[0].ToString().Equals("@0"))
                 {
-                    altitude = Convert.ToInt32(data[1]);
-                    yaw = Convert.ToInt32(data[2]);
-                    pitch = Convert.ToInt32(data[3]);
-                    roll = Convert.ToInt32(data[4]);
-                    Lat = Convert.ToDouble(data[5]);
-                    Lng = Convert.ToDouble(data[6]);
+                    //altitude = Convert.ToInt32(data[1].ToString());
+                    //yaw = Convert.ToInt32(data[2].ToString());
+                    //pitch = Convert.ToInt32(data[3].ToString());
+                    //roll = Convert.ToInt32(data[4].ToString());
+                    //Lat = Convert.ToDouble(data[5].ToString());
+                    //Lng = Convert.ToDouble(data[6].ToString());
                     //MessageBox.Show(Lat.ToString() + "," + Lng.ToString());
-                    battery = Convert.ToDouble(data[7]);
+                    //battery = Convert.ToDouble(data[8]);
                     //db.InsertData(Convert.ToString(altitude), Convert.ToString(yaw), Convert.ToString(pitch),
                     //    Convert.ToString(roll), Convert.ToString(Lat), Convert.ToString(Lng), time);
                     //Show data dari DB ke label
@@ -645,17 +670,24 @@ namespace GCS_WPF_2
                     //txtRoll.Content = model1.Roll;
                     //txtLat.Content = model1.Lat;
                     //txtLng.Content = model1.Lng;
-                    txtAlt.Content = altitude.ToString();
-                    txtYaw.Content = yaw.ToString();
-                    txtPitch.Content = pitch.ToString();
-                    txtRoll.Content = roll.ToString();
-                    txtLat.Content = Lat.ToString();
-                    txtLng.Content = Lng.ToString();
-
+                    txtAlt.Content = data[1];
+                    txtYaw.Content = data[2];
+                    txtPitch.Content = data[3];
+                    txtRoll.Content = data[4];
+                    txtLat.Content = data[5];
+                    txtLng.Content = data[6];
+                    Console.WriteLine(data[1]);
+                    Console.WriteLine(data[2]);
+                    Console.WriteLine(data[3]);
+                    Console.WriteLine(data[4]);
+                    Console.WriteLine(data[5]);
+                    Console.WriteLine(data[6]);
+                    Lat = Convert.ToDouble(data[5]);
+                    Lng = Convert.ToDouble(data[6]);
                     TrackDroneIcon(Lat, Lng);
                     position = new Location(Lat, Lng);
                     myMap.Center = position; //center position sesuai lokasi drone
-                    myMap.ZoomLevel = 25;
+                    myMap.ZoomLevel = 17;
 
                     double cekToleransi1 = 0, cekToleransi2 = 0, cekToleransi3 = 0, cekToleransi4 = 0;
 
@@ -663,7 +695,7 @@ namespace GCS_WPF_2
                     cekToleransi2 = distance(Lat, Lng, lat2, lng2);
                     cekToleransi3 = distance(Lat, Lng, lat3, lng3);
                     cekToleransi4 = distance(Lat, Lng, lat4, lng4);
-                    MessageBox.Show(cekToleransi1.ToString() + "\n" + cekToleransi2.ToString() + "\n" + cekToleransi3.ToString() + "\n" + cekToleransi4.ToString());
+                    //MessageBox.Show(cekToleransi1.ToString() + "\n" + cekToleransi2.ToString() + "\n" + cekToleransi3.ToString() + "\n" + cekToleransi4.ToString());
 
                     //double rLat1 = lat1 + 0.000018; double rLng1 = lng1 + 0.000018;
                     //double rLat2 = lat2 + 0.000018; double rLng2 = lng2 + 0.000018;
@@ -675,62 +707,62 @@ namespace GCS_WPF_2
                     //double dLat3 = rLat3 * rLat3; double dLng3 = rLng3 * rLng3;
                     //double dLat4 = rLat4 * rLat4; double dLng4 = rLng4 * rLng4;
                     
-                    if (cekToleransi1<=0.004)
-                    {
-                        AddCustomPin("pinHome.png", lat1, lng1, "");
-                        //MessageBox.Show("LatLng1 SUKSES");
-                    }
-                    if (cekToleransi2<=0.004)
-                    {
-                        AddCustomPin("pinHome.png", lat2, lng2, "");
-                        //MessageBox.Show("LatLng2 SUKSES");
-                    }
-                    if (cekToleransi3 <= 0.004)
-                    {
-                        AddCustomPin("pinHome.png", lat3, lng3, "");
-                        //MessageBox.Show("LatLng3 SUKSES");
-                    }
-                    if (cekToleransi4 <= 0.004)
-                    {
-                        AddCustomPin("pinHome.png", lat4, lng4, "");
-                        //MessageBox.Show("LatLng4 SUKSES");
-                    }
+                    //if (cekToleransi1<=0.004)
+                    //{
+                    //    AddCustomPin("pinHome.png", lat1, lng1, "");
+                    //    //MessageBox.Show("LatLng1 SUKSES");
+                    //}
+                    //if (cekToleransi2<=0.004)
+                    //{
+                    //    AddCustomPin("pinHome.png", lat2, lng2, "");
+                    //    //MessageBox.Show("LatLng2 SUKSES");
+                    //}
+                    //if (cekToleransi3 <= 0.004)
+                    //{
+                    //    AddCustomPin("pinHome.png", lat3, lng3, "");
+                    //    //MessageBox.Show("LatLng3 SUKSES");
+                    //}
+                    //if (cekToleransi4 <= 0.004)
+                    //{
+                    //    AddCustomPin("pinHome.png", lat4, lng4, "");
+                    //    //MessageBox.Show("LatLng4 SUKSES");
+                    //}
 
-                    #region HUD_Control
-                    Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
-                    Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
-                    Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
-                    #endregion
+                    //#region HUD_Control
+                    //Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
+                    //Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
+                    //Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
+                    //#endregion
                     
-                    #region battery
-                    label_batt.Content = Convert.ToString(battery) + "%";
-                    if (battery >= 75)
-                    {
-                        batt_icon.Visibility = Visibility.Visible;
-                        batt_icon_warning.Visibility = Visibility.Hidden;
-                        batt_icon_low.Visibility = Visibility.Hidden;
-                        batt_1.Visibility = Visibility.Visible; batt_2.Visibility = Visibility.Visible;
-                        batt_3.Visibility = Visibility.Visible; batt_4.Visibility = Visibility.Visible;
-                    }
-                    if (battery < 75)
-                    {
-                        batt_1.Visibility = Visibility.Hidden;
-                    }
-                    if (battery < 50)
-                    {
-                        batt_icon.Visibility = Visibility.Hidden;
-                        batt_icon_warning.Visibility = Visibility.Visible;
-                        batt_icon_low.Visibility = Visibility.Hidden;
-                        batt_2.Visibility = Visibility.Hidden;
-                    }
-                    if (battery < 25)
-                    {
-                        batt_icon.Visibility = Visibility.Hidden;
-                        batt_icon_warning.Visibility = Visibility.Hidden;
-                        batt_icon_low.Visibility = Visibility.Visible;
-                        batt_3.Visibility = Visibility.Hidden;
-                    }
-                    #endregion
+                    //#region battery
+                    //label_batt.Content = Convert.ToString(battery) + "%";
+                    //if (battery >= 75)
+                    //{
+                    //    batt_icon.Visibility = Visibility.Visible;
+                    //    batt_icon_warning.Visibility = Visibility.Hidden;
+                    //    batt_icon_low.Visibility = Visibility.Hidden;
+                    //    batt_1.Visibility = Visibility.Visible; batt_2.Visibility = Visibility.Visible;
+                    //    batt_3.Visibility = Visibility.Visible; batt_4.Visibility = Visibility.Visible;
+                    //}
+                    //if (battery < 75)
+                    //{
+                    //    batt_1.Visibility = Visibility.Hidden;
+                    //}
+                    //if (battery < 50)
+                    //{
+                    //    batt_icon.Visibility = Visibility.Hidden;
+                    //    batt_icon_warning.Visibility = Visibility.Visible;
+                    //    batt_icon_low.Visibility = Visibility.Hidden;
+                    //    batt_2.Visibility = Visibility.Hidden;
+                    //}
+                    //if (battery < 25)
+                    //{
+                    //    batt_icon.Visibility = Visibility.Hidden;
+                    //    batt_icon_warning.Visibility = Visibility.Hidden;
+                    //    batt_icon_low.Visibility = Visibility.Visible;
+                    //    batt_3.Visibility = Visibility.Hidden;
+                    //}
+                    //#endregion
 
                     //db.GetData();
                     //txtAlt.Content = Convert.ToString(altitude);
@@ -743,7 +775,7 @@ namespace GCS_WPF_2
             }
             catch (Exception ex)
             {
-                MessageBox.Show("2 : " + ex.Message);
+                MessageBox.Show("Data received error: " + ex.Message);
             }
         }
         #endregion
@@ -825,6 +857,17 @@ namespace GCS_WPF_2
         private double rad2deg(double rad)
         {
             return (rad / Math.PI * 180.0);
+        }
+
+        private void myMap_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (i == 5)
+            {
+                i = 1;
+                //myMap.Children.Clear();
+                Image image = new Image();
+                removePin(image);
+            }
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -933,36 +976,7 @@ namespace GCS_WPF_2
         {
             MapLayer imageLayer = new MapLayer();
             Image image = new Image();
-
-            //                   ***REMOVE ICON***
-            List<UIElement> elementsToRemove = new List<UIElement>();
-            List<UIElement> pushpinToRemove = new List<UIElement>();
-            foreach (UIElement element in myMap.Children)
-            {
-                foreach (UIElement p in myMap.Children.OfType<MapLayer>())
-                {
-                    if ((((MapLayer)p).Tag) == "icon")
-                    {
-                        pushpinToRemove.Add(p);
-                    }
-                    //if (p.GetType() == typeof(MapLayer))
-                    //{
-                    //    pushpinToRemove.Add(imageLayer);
-                    //}
-                }
-                foreach (UIElement pins in pushpinToRemove)
-                {
-                    myMap.Children.Remove(image);
-
-                }
-                elementsToRemove.Add(element);
-            }
-            foreach (UIElement es in pushpinToRemove)
-            {
-                myMap.Children.Remove(es);
-            }
-            //                   ***REMOVE ICON***
-
+            removePin(image);
             image.Height = 30;
             image.Width = 30;
             //Define the URI location of the image
@@ -1000,6 +1014,40 @@ namespace GCS_WPF_2
             imageLayer.Tag = "icon";
             ////Add the image layer to the map
             myMap.Children.Add(imageLayer);
+        }
+        #endregion
+
+        #region RemovePin
+        private void removePin(Image image)
+        {
+            //                   ***REMOVE ICON***
+            List<UIElement> elementsToRemove = new List<UIElement>();
+            List<UIElement> pushpinToRemove = new List<UIElement>();
+            foreach (UIElement element in myMap.Children)
+            {
+                foreach (UIElement p in myMap.Children.OfType<MapLayer>())
+                {
+                    if ((((MapLayer)p).Tag) == "icon")
+                    {
+                        pushpinToRemove.Add(p);
+                    }
+                    //if (p.GetType() == typeof(MapLayer))
+                    //{
+                    //    pushpinToRemove.Add(imageLayer);
+                    //}
+                }
+                foreach (UIElement pins in pushpinToRemove)
+                {
+                    myMap.Children.Remove(image);
+
+                }
+                elementsToRemove.Add(element);
+            }
+            foreach (UIElement es in pushpinToRemove)
+            {
+                myMap.Children.Remove(es);
+            }
+            //                   ***REMOVE ICON***
         }
         #endregion
 

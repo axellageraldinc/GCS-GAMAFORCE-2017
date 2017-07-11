@@ -113,7 +113,7 @@
                     <DropShadowEffect Direction="270" BlurRadius="10" ShadowDepth="2"/>
                 </Rectangle.Effect>
             </Rectangle>
-            <m:Map x:Name="myMap" CredentialsProvider="Am8VDrB5d9PouPBAl9DJ5sMt6diIn5QfT7ddusUA3_6zYYF0je2wkgLpppszCHzD" Height="490" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="529" MouseDoubleClick="MapWithPushpins_MouseDoubleClick"/>
+            <m:Map x:Name="myMap" CredentialsProvider="Am8VDrB5d9PouPBAl9DJ5sMt6diIn5QfT7ddusUA3_6zYYF0je2wkgLpppszCHzD" Height="490" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="529" MouseDoubleClick="MapWithPushpins_MouseDoubleClick" MouseLeftButtonDown="myMap_MouseLeftButtonDown"/>
             <Rectangle Fill="#FF3993CF" HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="529"/>
             <Label x:Name="label_Copy2" Content="UAV LOCATION" HorizontalAlignment="Center" Margin="1,1,364,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="White" Width="164"/>
         </Grid>
