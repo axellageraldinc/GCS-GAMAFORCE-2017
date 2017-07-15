@@ -470,7 +470,7 @@ namespace GCS_WPF_2
                 //Mulai Timer
                 TimeStart = string.Format("FlightLog__{0:dd_MMMM_yyyy__HH_mm_ss}", DateTime.Now);
                 start = DateTime.Now;
-                Timer();
+                //Timer();
                 TimerFlightTime();
                 //portGCS.Write("SEMPAK:");
             }
@@ -503,9 +503,12 @@ namespace GCS_WPF_2
         {
             try
             {
-                portGCS.Close(); //close the serial port
-                myMap.Children.Clear();
-                myMap.ZoomLevel = 1;
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    portGCS.Close(); //close the serial port
+                    myMap.Children.Clear();
+                    myMap.ZoomLevel = 1;
+                }));
             }
 
             catch (Exception ex)

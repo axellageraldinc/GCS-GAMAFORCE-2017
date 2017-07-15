@@ -176,3 +176,47 @@ E:\UGM\Gamaforce\gcs_gamaforce_axell\GCS_WPF_2\obj\Debug\MainWindow.baml
 E:\UGM\Gamaforce\gcs_gamaforce_axell\GCS_WPF_2\obj\Debug\GCS_WPF_2.g.resources
 E:\UGM\Gamaforce\gcs_gamaforce_axell\GCS_WPF_2\obj\Debug\GCS_WPF_2.Properties.Resources.resources
 E:\UGM\Gamaforce\gcs_gamaforce_axell\GCS_WPF_2\obj\Debug\GCS_WPF_2.csproj.GenerateResource.Cache
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\GCS_WPF_2.exe.config
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.csproj.ResolveComReference.cache
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.exe
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.pdb
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\GCS_WPF_2.exe
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\GCS_WPF_2.pdb
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Imaging.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Math.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Video.DirectShow.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Video.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\DynamicDataDisplay.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\EntityFramework.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HUD.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\System.Data.SQLite.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\System.Data.SQLite.EF6.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\System.Data.SQLite.Linq.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Utilities.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Types.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Imaging.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Math.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Video.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Video.DirectShow.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\DynamicDataDisplay.pdb
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\EntityFramework.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HUD.pdb
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\System.Data.SQLite.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Utilities.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Types.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.csprojResolveAssemblyReference.cache
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\HUD_Big.g.cs
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\MainWindow.g.cs
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\App.g.cs
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2_MarkupCompile.cache
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2_MarkupCompile.lref
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\HUD_Big.baml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\MainWindow.baml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.g.resources
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.Properties.Resources.resources
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.csproj.GenerateResource.Cache
