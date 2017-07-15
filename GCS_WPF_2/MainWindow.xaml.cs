@@ -468,7 +468,7 @@ namespace GCS_WPF_2
                 ConnectPortBaudAttempt();
                 btnConnect.Content = "STOP";
                 //Mulai Timer
-                TimeStart = string.Format("FlightLog__{0:dd_MMMM_yyyy__HH_mm_ss}", DateTime.Now);
+                TimeStart = string.Format("FlightLog__{0:dd_MM_yyyy__HH_mm_ss}", DateTime.Now);
                 start = DateTime.Now;
                 //Timer();
                 TimerFlightTime();
@@ -478,7 +478,7 @@ namespace GCS_WPF_2
             {
                 btnConnect.Content = "CONNECT";
                 //Timer dihentikan
-                timer.Stop();
+                //timer.Stop();
                 //Jangan lupa flight time juga di save ke Database
                 timerFlight.Stop();
                 //Dibawah ini adalah operasi utk menghitung TotalFlightTime
@@ -494,7 +494,7 @@ namespace GCS_WPF_2
                     Thread CloseDown = new Thread(new ThreadStart(CloseSerialOnExit)); //close port in new thread to avoid hang
                     CloseDown.Start(); //close port in new thread to avoid hang
                 }
-                //db.ExcelSave(TimeStart, TotalHours, TotalMinutes, TotalSeconds);
+                db.ExcelSave(TimeStart, TotalHours, TotalMinutes, TotalSeconds);
                 RefreshUI();
                 db.DeleteAllData("GCS_DB");
             }
@@ -663,8 +663,8 @@ namespace GCS_WPF_2
                     //Lng = Convert.ToDouble(data[6].ToString());
                     //MessageBox.Show(Lat.ToString() + "," + Lng.ToString());
                     //battery = Convert.ToDouble(data[8]);
-                    //db.InsertData(Convert.ToString(altitude), Convert.ToString(yaw), Convert.ToString(pitch),
-                    //    Convert.ToString(roll), Convert.ToString(Lat), Convert.ToString(Lng), time);
+                    db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
+                        Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
                     //Show data dari DB ke label
                     //GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
                     //txtAlt.Content = model1.Alt;
