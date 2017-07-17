@@ -4,6 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:helix="http://helix-toolkit.org/wpf"
         xmlns:cam="clr-namespace:WebcamControl;assembly=WebcamControl"
         xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
         xmlns:hud="clr-namespace:HUD;assembly=HUD"
@@ -237,7 +238,7 @@
                         <d3:HorizontalAxisTitle FontFamily="DIN" Content="Waktu" Foreground="White"/>
                     </d3:ChartPlotter>
                 </TabItem>
-                <TabItem Header="ATTITUDE" Margin="-2,0,2,0" Foreground="White">
+                <TabItem Header="2D Visualization" Margin="-2,0,2,0" Foreground="White">
                     <Grid>
                         <StackPanel x:Name="Panel_HUD">
                             <hud:HUDControl x:Name="HUD_ATT" HorizontalAlignment="Left" VerticalAlignment="Top" Width="318" YawAngle="{Binding ElementName=Slider_Yaw,Path=Value,Mode=TwoWay}" PitchAngle="{Binding ElementName=Slider_Pitch,Path=Value}" RollAngle="{Binding ElementName=Slider_Roll,Path=Value}" MaxRollAngle="80" Height="217" Margin="-2,-2,0,-3"/>
@@ -249,6 +250,14 @@
                         <Label x:Name="txtPitch" Content="0.00" Margin="375,90,57,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="32" Foreground="#FFE64C66" HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch"/>
                         <Label x:Name="txtRoll" Content="0.00" Margin="372,160,55,-6" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="32" Foreground="#FFE64C66" HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch"/>
                         <Button x:Name="btnMaxHUD" Content="Maximize" HorizontalAlignment="Left" Height="22" Margin="-2,193,0,-3" VerticalAlignment="Top" Width="57" Background="#FF3498DB" BorderBrush="#FF3498DB" Foreground="White" Click="btnMaxHUD_Click"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="3D Visualization" Margin="-2,0,2,0" Foreground="White">
+                    <Grid>
+                        <helix:HelixViewport3D x:Name="viewPort3d" ZoomExtentsWhenLoaded="true"  >
+                            <!-- Remember to add light to the scene -->
+                            <helix:DefaultLights/>
+                        </helix:HelixViewport3D>
                     </Grid>
                 </TabItem>
             </TabControl>

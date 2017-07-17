@@ -30,6 +30,8 @@ using AForge.Video;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
 using Microsoft.Research.DynamicDataDisplay;
 using System.Globalization;
+using System.Windows.Media.Media3D;
+using HelixToolkit.Wpf;
 
 namespace GCS_WPF_2
 {
@@ -40,6 +42,10 @@ namespace GCS_WPF_2
     {
         #region DeklarasiVariabel
         PointCollection newPoint;
+
+        //Path to the model file
+        private const string MODEL_PATH = "C:\\Users\\Axellageraldinc A\\Documents\\GCS_Gamaforce_2017\\GCS_WPF_2\\dronev3.obj";
+        ModelVisual3D device3D = new ModelVisual3D();
 
         private FilterInfoCollection VideoCaptureDevices;
         private VideoCaptureDevice FinalVideo;
@@ -72,6 +78,10 @@ namespace GCS_WPF_2
             System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
 
+            device3D.Content = Display3d(MODEL_PATH);
+            // Add to view port
+            viewPort3d.Children.Add(device3D);
+
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
             db = new DBHelper();
             //InitiateAttitudeIndicator();
@@ -92,7 +102,61 @@ namespace GCS_WPF_2
             slider_zoom_map.Visibility = Visibility.Hidden;
             PortBaudSetting();
         }
-        
+
+        #region 3D Visualization
+        private Model3D Display3d(string model)
+        {
+            Model3D device = null;
+            try
+            {
+                //Adding a gesture here
+                //viewPort3d.RotateGesture = new MouseGesture(MouseAction.LeftClick);
+
+                //Import 3D model file
+                ModelImporter import = new ModelImporter();
+
+                //Load the 3D model file
+                device = import.Load(model);
+            }
+            catch (Exception e)
+            {
+                // Handle exception in case can not file 3D model
+                MessageBox.Show("Exception Error : " + e.StackTrace);
+            }
+            return device;
+        }
+        private void Yaw3D(double angleYaw)
+        {
+            var axis = new Vector3D(0, 1, 0);
+            var angle = angleYaw;
+
+            var matrix = device3D.Transform.Value;
+            matrix.Rotate(new Quaternion(axis, angle));
+
+            device3D.Transform = new MatrixTransform3D(matrix);
+        }
+        private void Pitch3D(double anglePitch)
+        {
+            var axis = new Vector3D(1, 0, 0);
+            var angle = anglePitch;
+
+            var matrix = device3D.Transform.Value;
+            matrix.Rotate(new Quaternion(axis, angle));
+
+            device3D.Transform = new MatrixTransform3D(matrix);
+        }
+        private void Roll3D(double angleRoll)
+        {
+            var axis = new Vector3D(0, 0, 1);
+            var angle = angleRoll;
+
+            var matrix = device3D.Transform.Value;
+            matrix.Rotate(new Quaternion(axis, angle));
+
+            device3D.Transform = new MatrixTransform3D(matrix);
+        }
+        #endregion
+
         #region Webcam plugin WebCamControl (gagal)
         //public void ConnectingWebcam()
         //{
@@ -675,8 +739,11 @@ namespace GCS_WPF_2
                     //txtLng.Content = model1.Lng;
                     txtAlt.Content = data[1];
                     txtYaw.Content = data[2];
+                    Yaw3D(Convert.ToDouble(data[2]));
                     txtPitch.Content = data[3];
+                    Pitch3D(Convert.ToDouble(data[3]));
                     txtRoll.Content = data[4];
+                    Roll3D(Convert.ToDouble(data[4]));
                     txtLat.Content = data[5];
                     txtLng.Content = data[6];
                     Console.WriteLine(data[1]);

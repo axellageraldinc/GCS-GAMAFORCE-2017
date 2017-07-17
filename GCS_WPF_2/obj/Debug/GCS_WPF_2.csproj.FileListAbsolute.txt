@@ -220,3 +220,11 @@ C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\Main
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.g.resources
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.Properties.Resources.resources
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.csproj.GenerateResource.Cache
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\Test3D.g.cs
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HelixToolkit.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HelixToolkit.Wpf.dll
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HelixToolkit.pdb
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HelixToolkit.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HelixToolkit.Wpf.pdb
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HelixToolkit.Wpf.xml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\Test3D.baml
