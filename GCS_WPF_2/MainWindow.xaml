@@ -255,6 +255,10 @@
                 <TabItem Header="3D Visualization" Margin="-2,0,2,0" Foreground="White">
                     <Grid>
                         <helix:HelixViewport3D x:Name="viewPort3d" ZoomExtentsWhenLoaded="true"  >
+                            <helix:HelixViewport3D.Camera>
+                                <!-- HelixViewport3D.ZoomExtentsWhenLoaded will figure out the position of the Camera -->
+                                <PerspectiveCamera LookDirection="0,-1,0" UpDirection="0,0,1"/>
+                            </helix:HelixViewport3D.Camera>
                             <!-- Remember to add light to the scene -->
                             <helix:DefaultLights/>
                         </helix:HelixViewport3D>

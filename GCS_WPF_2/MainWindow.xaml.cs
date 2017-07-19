@@ -81,6 +81,7 @@ namespace GCS_WPF_2
             device3D.Content = Display3d(MODEL_PATH);
             // Add to view port
             viewPort3d.Children.Add(device3D);
+            Pitch3D(-90);
 
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
             db = new DBHelper();
@@ -127,11 +128,11 @@ namespace GCS_WPF_2
         }
         private void Yaw3D(double angleYaw)
         {
-            var axis = new Vector3D(0, 1, 0);
+            var axis = new Vector3D(0, 0, 1);
             var angle = angleYaw;
 
             var matrix = device3D.Transform.Value;
-            matrix.Rotate(new Quaternion(axis, angle));
+            matrix.Rotate(new Quaternion(axis, angle*-1));
 
             device3D.Transform = new MatrixTransform3D(matrix);
         }
@@ -141,17 +142,17 @@ namespace GCS_WPF_2
             var angle = anglePitch;
 
             var matrix = device3D.Transform.Value;
-            matrix.Rotate(new Quaternion(axis, angle));
+            matrix.Rotate(new Quaternion(axis, angle*-1));
 
             device3D.Transform = new MatrixTransform3D(matrix);
         }
         private void Roll3D(double angleRoll)
         {
-            var axis = new Vector3D(0, 0, 1);
+            var axis = new Vector3D(0, 1, 0);
             var angle = angleRoll;
 
             var matrix = device3D.Transform.Value;
-            matrix.Rotate(new Quaternion(axis, angle));
+            matrix.Rotate(new Quaternion(axis, angle*-1));
 
             device3D.Transform = new MatrixTransform3D(matrix);
         }
