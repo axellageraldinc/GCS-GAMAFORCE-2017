@@ -32,6 +32,7 @@ using Microsoft.Research.DynamicDataDisplay;
 using System.Globalization;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
+using System.ComponentModel;
 
 namespace GCS_WPF_2
 {
@@ -42,6 +43,8 @@ namespace GCS_WPF_2
     {
         #region DeklarasiVariabel
         PointCollection newPoint;
+
+        private static BackgroundWorker bgWorker;
 
         //Path to the model file
         private const string MODEL_PATH = "C:\\Users\\Axellageraldinc A\\Documents\\GCS_Gamaforce_2017\\GCS_WPF_2\\dronev3.obj";
@@ -78,6 +81,14 @@ namespace GCS_WPF_2
             InitializeComponent();
             System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
+            // Deklarasi background worker, masih coba2
+            bgWorker = new BackgroundWorker
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = false
+            };
+            bgWorker.DoWork += bgWorker_DoWork;
+            bgWorker.ProgressChanged += bgWorker_ProgressChanged;
 
             device3D.Content = Display3d(MODEL_PATH);
             // Add to view port
@@ -637,8 +648,12 @@ namespace GCS_WPF_2
                 //});
                 //ThreadDatadanDatabase.Start();
                 //Thread.CurrentThread.Priority = ThreadPriority.Highest;
-                Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
-                Dispatcher.Invoke((Action)(() => BoxDataReceived.Text += data_received + "\n"));
+
+                // Background worker jalan async, gak ganggu UI thread (belum ditest)
+                bgWorker.RunWorkerAsync();
+
+                //Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
+                //Dispatcher.Invoke((Action)(() => BoxDataReceived.Text += data_received + "\n"));
                 //TerimaData(data_received);
                 //BoxDataReceived.Text += data_received + "\n";
                 //Dispatcher.Invoke((Action)(() => PortBaudSetting()));
@@ -1363,5 +1378,19 @@ namespace GCS_WPF_2
             }
         }
 
+        // Background worker proses, kalo portGCS kebuka, bakal jalan, kalo ketutup, selesai. (belum ditest)
+        private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            while(portGCS.IsOpen)
+            {
+                TerimaData(portGCS.ReadLine());
+            }
+        }
+
+        // Update UI BoxDataReceived (belum ditest)
+        private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BoxDataReceived.Text += portGCS.ReadLine();
+        }
     }
 }
