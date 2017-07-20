@@ -623,6 +623,8 @@ namespace GCS_WPF_2
                 portGCS.Open();
                 //Data yang diterima, dioperasikan di method portGCS_DataReceived
                 portGCS.DataReceived += new SerialDataReceivedEventHandler(portGCS_DataReceived);
+                // Background worker jalan async, gak ganggu UI thread (belum ditest)
+                bgWorker.RunWorkerAsync();
             }
             catch (Exception ex)
             {
@@ -648,10 +650,7 @@ namespace GCS_WPF_2
                 //});
                 //ThreadDatadanDatabase.Start();
                 //Thread.CurrentThread.Priority = ThreadPriority.Highest;
-
-                // Background worker jalan async, gak ganggu UI thread (belum ditest)
-                bgWorker.RunWorkerAsync();
-
+                
                 //Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
                 //Dispatcher.Invoke((Action)(() => BoxDataReceived.Text += data_received + "\n"));
                 //TerimaData(data_received);
@@ -1378,19 +1377,22 @@ namespace GCS_WPF_2
             }
         }
 
-        // Background worker proses, kalo portGCS kebuka, bakal jalan, kalo ketutup, selesai. (belum ditest)
+        // Update UI BoxDataReceived (belum ditest)
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            while(portGCS.IsOpen)
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                BoxDataReceived.Text += portGCS.ReadLine() + "\n";
+            }));
+        }
+
+        // Background worker proses, kalo portGCS kebuka, bakal jalan, kalo ketutup, selesai. (belum ditest)
+        private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (portGCS.IsOpen)
             {
                 TerimaData(portGCS.ReadLine());
             }
-        }
-
-        // Update UI BoxDataReceived (belum ditest)
-        private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            BoxDataReceived.Text += portGCS.ReadLine();
         }
     }
 }
