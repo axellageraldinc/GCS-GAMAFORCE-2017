@@ -70,6 +70,7 @@ namespace GCS_WPF_2
         double[] lng = new double[4];
         double lat1, lat2, lat3, lat4;
         double lng1, lng2, lng3, lng4;
+
         #endregion
 
         public MainWindow()
@@ -103,6 +104,16 @@ namespace GCS_WPF_2
             slider_zoom_map.Visibility = Visibility.Hidden;
             PortBaudSetting();
         }
+
+        #region MultiThreading
+        private void KontenYPRBackground()
+        {
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                
+            }));
+        }
+        #endregion
 
         #region 3D Visualization
         private Model3D Display3d(string model)
@@ -529,7 +540,7 @@ namespace GCS_WPF_2
         {
             if (btnConnect.Content.Equals("CONNECT"))
             {
-                PlotGraphic();
+                //PlotGraphic();
                 ConnectPortBaudAttempt();
                 btnConnect.Content = "STOP";
                 //Mulai Timer
@@ -556,8 +567,9 @@ namespace GCS_WPF_2
                 //port di close supaya transmit data dihentikan
                 if (portGCS.IsOpen)
                 {
-                    Thread CloseDown = new Thread(new ThreadStart(CloseSerialOnExit)); //close port in new thread to avoid hang
-                    CloseDown.Start(); //close port in new thread to avoid hang
+                    CloseSerialOnExit();
+                    //Thread CloseDown = new Thread(new ThreadStart(CloseSerialOnExit)); //close port in new thread to avoid hang
+                    //CloseDown.Start(); //close port in new thread to avoid hang
                 }
                 db.ExcelSave(TimeStart, TotalHours, TotalMinutes, TotalSeconds);
                 RefreshUI();
@@ -568,7 +580,7 @@ namespace GCS_WPF_2
         {
             try
             {
-                this.Dispatcher.BeginInvoke(new Action(() =>
+                this.Dispatcher.Invoke(new Action(() =>
                 {
                     portGCS.Close(); //close the serial port
                     myMap.Children.Clear();
@@ -578,7 +590,7 @@ namespace GCS_WPF_2
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message); //catch any serial port closing error messages
+                MessageBox.Show("Error DC Port : " + ex.Message); //catch any serial port closing error messages
 
             }
         }
@@ -603,7 +615,7 @@ namespace GCS_WPF_2
             }
             catch (Exception ex)
             {
-                MessageBox.Show("0 : " + ex.Message);
+                MessageBox.Show("ConnectPortBaud Error : " + ex.Message);
             }
         }
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -618,14 +630,23 @@ namespace GCS_WPF_2
                 //data_received adalah baris yang dibaca dari data yang dikirimkan melalui port
                 data_received = portGCS.ReadLine();
                 //data_received akan diolah di method TerimaData
+                //Thread ThreadDatadanDatabase = new Thread(() =>
+                //{
+                //    TerimaData(data_received);
+                //    BoxDataReceived.Text += data_received + "\n";
+                //});
+                //ThreadDatadanDatabase.Start();
+                //Thread.CurrentThread.Priority = ThreadPriority.Highest;
                 Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
                 Dispatcher.Invoke((Action)(() => BoxDataReceived.Text += data_received + "\n"));
+                //TerimaData(data_received);
+                //BoxDataReceived.Text += data_received + "\n";
                 //Dispatcher.Invoke((Action)(() => PortBaudSetting()));
 
             }
             catch (Exception ex)
             {
-                MessageBox.Show("1 :" + ex.Message);
+                MessageBox.Show("Error Terima Data :" + ex.Message);
             }
         }
         #endregion
@@ -728,8 +749,7 @@ namespace GCS_WPF_2
                     //Lng = Convert.ToDouble(data[6].ToString());
                     //MessageBox.Show(Lat.ToString() + "," + Lng.ToString());
                     //battery = Convert.ToDouble(data[8]);
-                    db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
-                        Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
+
                     //Show data dari DB ke label
                     //GCS_DB_MODEL model1 = db.GetDataModel("GCS_DB");
                     //txtAlt.Content = model1.Alt;
@@ -738,6 +758,10 @@ namespace GCS_WPF_2
                     //txtRoll.Content = model1.Roll;
                     //txtLat.Content = model1.Lat;
                     //txtLng.Content = model1.Lng;
+
+                    db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
+                        Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
+
                     txtAlt.Content = data[1];
                     txtYaw.Content = data[2];
                     Yaw3D(Convert.ToDouble(data[2]));
@@ -777,7 +801,7 @@ namespace GCS_WPF_2
                     //double dLat2 = rLat2 * rLat2; double dLng2 = rLng2 * rLng2;
                     //double dLat3 = rLat3 * rLat3; double dLng3 = rLng3 * rLng3;
                     //double dLat4 = rLat4 * rLat4; double dLng4 = rLng4 * rLng4;
-                    
+
                     //if (cekToleransi1<=0.004)
                     //{
                     //    AddCustomPin("pinHome.png", lat1, lng1, "");
@@ -799,12 +823,12 @@ namespace GCS_WPF_2
                     //    //MessageBox.Show("LatLng4 SUKSES");
                     //}
 
-                    //#region HUD_Control
-                    //Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
-                    //Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
-                    //Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
-                    //#endregion
-                    
+                    #region HUD_Control
+                    Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
+                    Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
+                    Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
+                    #endregion
+
                     //#region battery
                     //label_batt.Content = Convert.ToString(battery) + "%";
                     //if (battery >= 75)

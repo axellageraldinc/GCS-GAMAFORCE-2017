@@ -175,6 +175,7 @@ namespace HUD
             textblock.Width = 20;
             textblock.Stroke = Brushes.DimGray;
             textblock.HorizontalContentAlignment = HorizontalAlignment.Center;
+            double angle2 = angle * -1;
             textblock.Text = Math.Abs(angle).ToString("##0");
             textblock.Foreground = Brushes.White;
             textblock.FontSize = 14;
@@ -236,13 +237,14 @@ namespace HUD
 
             Canvas.SetTop(Canvas_RollCursor, -cycleR - Canvas_RollCursor.Height);
             Canvas.SetLeft(Canvas_RollCursor, -Canvas_RollCursor.Width / 2);
+            double RollAngle2 = RollAngle * -1;
             Text_RollStaff_Value.Text = RollAngle.ToString("0.##");
         }
         protected virtual void RedrawRoll()
         {
             if (Grid_Virwport.ActualHeight == 0 || Grid_Virwport.ActualWidth == 0) return;
             var bkbrush = (LinearGradientBrush)Grid_Virwport.Background;
-            double roll = (RollAngle % 360) * Math.PI / 180;
+            double roll = ((RollAngle % 360) * Math.PI / 180);
             if (roll > Math.PI) roll = Math.PI * 2 - roll;
             if (roll < -Math.PI) roll = Math.PI * 2 + roll;
             double oppositeangle = Math.Atan(Grid_Virwport.ActualWidth / Grid_Virwport.ActualHeight);
