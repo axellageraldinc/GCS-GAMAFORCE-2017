@@ -1,0 +1,7 @@
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Release\GCS_WPF_2.exe.config
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Release\GCS_WPF_2.csproj.ResolveComReference.cache
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Release\HUD_Big.g.cs
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Release\Test3D.g.cs
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Release\App.g.cs
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Release\GCS_WPF_2_MarkupCompile.cache
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Release\GCS_WPF_2_MarkupCompile.lref

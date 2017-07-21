@@ -74,6 +74,9 @@ namespace GCS_WPF_2
         double lat1, lat2, lat3, lat4;
         double lng1, lng2, lng3, lng4;
 
+        double YawBaru=0, PitchBaru=0, RollBaru=0;
+        double YawLama = 0, PitchLama = 0, RollLama = 0;
+
         #endregion
 
         public MainWindow()
@@ -604,13 +607,16 @@ namespace GCS_WPF_2
                 //portGCS.Close(); //close the serial port
                 //myMap.Children.Clear();
                 //myMap.ZoomLevel = 1;
-                this.Dispatcher.Invoke(new Action(() =>
-                {
-                    bgWorker.CancelAsync();
-                    //portGCS.Close(); //close the serial port
-                    myMap.Children.Clear();
-                    myMap.ZoomLevel = 1;
-                }));
+                bgWorker.RunWorkerAsync();
+                //Dispatcher.BeginInvoke(new Action(() =>
+                //{
+                //    //bgWorker.CancelAsync();
+                //    //Thread.Sleep(1000);
+                //    portGCS.DataReceived -= portGCS_DataReceived;
+                //    portGCS.Close(); //close the serial port
+                //    myMap.Children.Clear();
+                //    myMap.ZoomLevel = 1;
+                //}));
             }
 
             catch (Exception ex)
@@ -636,9 +642,9 @@ namespace GCS_WPF_2
                 Console.WriteLine(portGCS.PortName);
                 portGCS.Open();
                 //Data yang diterima, dioperasikan di method portGCS_DataReceived
-                //portGCS.DataReceived += new SerialDataReceivedEventHandler(portGCS_DataReceived);
+                portGCS.DataReceived += new SerialDataReceivedEventHandler(portGCS_DataReceived);
                 // Background worker jalan async, gak ganggu UI thread (belum ditest)
-                bgWorker.RunWorkerAsync(portGCS);
+                //bgWorker.RunWorkerAsync(portGCS);
             }
             catch (Exception ex)
             {
@@ -665,7 +671,8 @@ namespace GCS_WPF_2
                 //ThreadDatadanDatabase.Start();
                 //Thread.CurrentThread.Priority = ThreadPriority.Highest;
                 //bgWorker.RunWorkerAsync(portGCS);
-                //Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
+                Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
+                //KODING DIBAWAH JANGAN DI-UNCOMMENT
                 //Dispatcher.Invoke((Action)(() => BoxDataReceived.Text += data_received + "\n"));
                 //TerimaData(data_received);
                 //BoxDataReceived.Text += data_received + "\n";
@@ -787,16 +794,23 @@ namespace GCS_WPF_2
                     //txtLat.Content = model1.Lat;
                     //txtLng.Content = model1.Lng;
 
-                    db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
-                        Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
+                    //db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
+                    //    Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
+                    db.InsertData2(TimeStart, data[1], data[2], data[3], data[4], data[5], data[6], time);
 
                     txtAlt.Content = data[1];
                     txtYaw.Content = data[2];
-                    Yaw3D(Convert.ToDouble(data[2]));
+                    YawBaru = Convert.ToDouble(data[2]);
+                    Yaw3D(YawBaru-YawLama);
+                    YawLama = YawBaru;
                     txtPitch.Content = data[3];
-                    Pitch3D(Convert.ToDouble(data[3]));
+                    PitchBaru = Convert.ToDouble(data[3]);
+                    Pitch3D(PitchBaru-PitchLama);
+                    PitchLama = PitchBaru;
                     txtRoll.Content = data[4];
-                    Roll3D(Convert.ToDouble(data[4]));
+                    RollBaru = Convert.ToDouble(data[4]);
+                    Roll3D(RollBaru-RollLama);
+                    RollLama = RollBaru;
                     txtLat.Content = data[5];
                     txtLng.Content = data[6];
                     Console.WriteLine(data[1]);
@@ -854,7 +868,7 @@ namespace GCS_WPF_2
                     #region HUD_Control
                     Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
                     Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
-                    Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
+                    Slider_Roll.Value = Convert.ToDouble(txtRoll.Content)*-1;
                     #endregion
 
                     //#region battery
@@ -1401,88 +1415,89 @@ namespace GCS_WPF_2
             }
         }
 
-        #region Background Worker
-        // Update UI BoxDataReceived (belum ditest)
+        #region Background Worker untuk closing port GCS
+        // Status proses di console
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            //BoxDataReceived.Text += portGCS.ReadLine() + "\n";
-            string[] data;
-            //BoxDataReceived.ScrollToEnd();
-            string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
-            data = portGCS.ReadLine().Split('#');
-            //MessageBox.Show(Convert.ToString(portGCS.ReadLine()));
-            //MessageBox.Show(data[0].ToString());
-            //Waypoint
-            //Console.WriteLine(data_received);
-            //Console.WriteLine(data[1]);
-            if (data[0].ToString().Equals("@20"))
-            {
+            Console.WriteLine("Closing Port");
+            ////BoxDataReceived.Text += portGCS.ReadLine() + "\n";
+            //string[] data;
+            ////BoxDataReceived.ScrollToEnd();
+            //string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
+            //data = portGCS.ReadLine().Split('#');
+            ////MessageBox.Show(Convert.ToString(portGCS.ReadLine()));
+            ////MessageBox.Show(data[0].ToString());
+            ////Waypoint
+            ////Console.WriteLine(data_received);
+            ////Console.WriteLine(data[1]);
+            //if (data[0].ToString().Equals("@20"))
+            //{
 
-                int x = 1, y = 2;
+            //    int x = 1, y = 2;
                 
-                for (int i = 0; i < 4; i++)
-                {
-                    lat[i] = Convert.ToDouble(data[x]);
-                    lng[i] = Convert.ToDouble(data[y]);
-                    x += 2; y += 2;
-                    int wayPoint = i + 1;
-                    AddCustomPin("pin.png", lat[i], lng[i], "Waypoint ke-" + wayPoint);
-                }
-                lat1 = lat[0]; lat2 = lat[1]; lat3 = lat[2]; lat4 = lat[3];
-                lng1 = lng[0]; lng2 = lng[1]; lng3 = lng[2]; lng4 = lng[3];
-                Location position = new Location(lat1, lng1);
-                myMap.Center = position;
-                myMap.ZoomLevel = 17;
-            }
-            //Data biasa
-            else if (data[0].ToString().Equals("@0"))
-            {
-                //db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
-                //    Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
-                db.InsertData2(TimeStart, data[1], data[2], data[3], data[4], data[5], data[6], time);
+            //    for (int i = 0; i < 4; i++)
+            //    {
+            //        lat[i] = Convert.ToDouble(data[x]);
+            //        lng[i] = Convert.ToDouble(data[y]);
+            //        x += 2; y += 2;
+            //        int wayPoint = i + 1;
+            //        AddCustomPin("pin.png", lat[i], lng[i], "Waypoint ke-" + wayPoint);
+            //    }
+            //    lat1 = lat[0]; lat2 = lat[1]; lat3 = lat[2]; lat4 = lat[3];
+            //    lng1 = lng[0]; lng2 = lng[1]; lng3 = lng[2]; lng4 = lng[3];
+            //    Location position = new Location(lat1, lng1);
+            //    myMap.Center = position;
+            //    myMap.ZoomLevel = 17;
+            //}
+            ////Data biasa
+            //else if (data[0].ToString().Equals("@0"))
+            //{
+            //    //db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
+            //    //    Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
+            //    db.InsertData2(TimeStart, data[1], data[2], data[3], data[4], data[5], data[6], time);
 
-                txtAlt.Content = data[1];
-                txtYaw.Content = data[2];
-                Yaw3D(Convert.ToDouble(data[2]));
-                txtPitch.Content = data[3];
-                Pitch3D(Convert.ToDouble(data[3]));
-                txtRoll.Content = data[4];
-                Roll3D(Convert.ToDouble(data[4]));
-                txtLat.Content = data[5];
-                txtLng.Content = data[6];
-                Console.WriteLine(data[1]);
-                Console.WriteLine(data[2]);
-                Console.WriteLine(data[3]);
-                Console.WriteLine(data[4]);
-                Console.WriteLine(data[5]);
-                Console.WriteLine(data[6]);
-                Lat = Convert.ToDouble(data[5]);
-                Lng = Convert.ToDouble(data[6]);
-                TrackDroneIcon(Lat, Lng);
-                position = new Location(Lat, Lng);
-                myMap.Center = position; //center position sesuai lokasi drone
-                myMap.ZoomLevel = 17;
+            //    txtAlt.Content = data[1];
+            //    txtYaw.Content = data[2];
+            //    Yaw3D(Convert.ToDouble(data[2]));
+            //    txtPitch.Content = data[3];
+            //    Pitch3D(Convert.ToDouble(data[3]));
+            //    txtRoll.Content = data[4];
+            //    Roll3D(Convert.ToDouble(data[4]));
+            //    txtLat.Content = data[5];
+            //    txtLng.Content = data[6];
+            //    Console.WriteLine(data[1]);
+            //    Console.WriteLine(data[2]);
+            //    Console.WriteLine(data[3]);
+            //    Console.WriteLine(data[4]);
+            //    Console.WriteLine(data[5]);
+            //    Console.WriteLine(data[6]);
+            //    Lat = Convert.ToDouble(data[5]);
+            //    Lng = Convert.ToDouble(data[6]);
+            //    TrackDroneIcon(Lat, Lng);
+            //    position = new Location(Lat, Lng);
+            //    myMap.Center = position; //center position sesuai lokasi drone
+            //    myMap.ZoomLevel = 17;
 
-                double cekToleransi1 = 0, cekToleransi2 = 0, cekToleransi3 = 0, cekToleransi4 = 0;
+            //    double cekToleransi1 = 0, cekToleransi2 = 0, cekToleransi3 = 0, cekToleransi4 = 0;
 
-                cekToleransi1 = distance(Lat, Lng, lat1, lng1);
-                cekToleransi2 = distance(Lat, Lng, lat2, lng2);
-                cekToleransi3 = distance(Lat, Lng, lat3, lng3);
-                cekToleransi4 = distance(Lat, Lng, lat4, lng4);
+            //    cekToleransi1 = distance(Lat, Lng, lat1, lng1);
+            //    cekToleransi2 = distance(Lat, Lng, lat2, lng2);
+            //    cekToleransi3 = distance(Lat, Lng, lat3, lng3);
+            //    cekToleransi4 = distance(Lat, Lng, lat4, lng4);
                 
-                #region HUD_Control
-                Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
-                Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
-                Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
-                #endregion
-            }
+            //    #region HUD_Control
+            //    Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
+            //    Slider_Pitch.Value = Convert.ToDouble(txtPitch.Content);
+            //    Slider_Roll.Value = Convert.ToDouble(txtRoll.Content);
+            //    #endregion
+            //}
             //this.Dispatcher.Invoke(new Action(() =>
             //{
             //    BoxDataReceived.Text += portGCS.ReadLine() + "\n";
             //}));
         }
 
-        // Background worker proses, kalo portGCS kebuka, bakal jalan, kalo ketutup, selesai. (belum ditest)
+        // Background worker proses, closing port
         private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             SerialPort sp = e.Argument as SerialPort;
@@ -1499,22 +1514,25 @@ namespace GCS_WPF_2
                     e.Cancel = true;
                     return;
                 }
-                try
-                {
-                    sp.ReadLine();
-                    bgWorker.ReportProgress(1);
-                } catch (Exception bge)
-                {
-                    MessageBox.Show("Error bgWorker: " + bge.Message);
-                }
-                Thread.Sleep(70);
-                //TerimaData(portGCS.ReadLine());
+                portGCS.Close();
+                //try
+                //{
+                //    sp.ReadLine();
+                //    bgWorker.ReportProgress(1);
+                //} catch (Exception bge)
+                //{
+                //    MessageBox.Show("Error bgWorker: " + bge.Message);
+                //}
+                //Thread.Sleep(100);
+                ////TerimaData(portGCS.ReadLine());
             }
         }
 
+        //Background worker completed, show MessageBox
         private void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            portGCS.Close();
+            MessageBox.Show("Port Closed!");
+            //portGCS.Close();
             if (e.Cancelled)
             {
 
