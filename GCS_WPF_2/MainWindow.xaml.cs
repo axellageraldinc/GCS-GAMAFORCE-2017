@@ -89,6 +89,15 @@ namespace GCS_WPF_2
             };
             bgWorker.DoWork += bgWorker_DoWork;
             bgWorker.ProgressChanged += bgWorker_ProgressChanged;
+            bgWorker.RunWorkerCompleted += bgWorker_RunWorkerCompleted;
+            if (bgWorker.IsBusy)
+            {
+
+                bgWorker.CancelAsync();
+
+                Console.ReadLine();
+
+            }
 
             device3D.Content = Display3d(MODEL_PATH);
             // Add to view port
@@ -591,6 +600,9 @@ namespace GCS_WPF_2
         {
             try
             {
+                //portGCS.Close(); //close the serial port
+                //myMap.Children.Clear();
+                //myMap.ZoomLevel = 1;
                 this.Dispatcher.Invoke(new Action(() =>
                 {
                     portGCS.Close(); //close the serial port
@@ -650,7 +662,7 @@ namespace GCS_WPF_2
                 //});
                 //ThreadDatadanDatabase.Start();
                 //Thread.CurrentThread.Priority = ThreadPriority.Highest;
-                
+                //bgWorker.RunWorkerAsync(portGCS);
                 //Dispatcher.Invoke((Action)(() => TerimaData(data_received)));
                 //Dispatcher.Invoke((Action)(() => BoxDataReceived.Text += data_received + "\n"));
                 //TerimaData(data_received);
@@ -1380,11 +1392,12 @@ namespace GCS_WPF_2
         // Update UI BoxDataReceived (belum ditest)
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            BoxDataReceived.Text += portGCS.ReadLine() + "\n";
+            //BoxDataReceived.Text += portGCS.ReadLine() + "\n";
             string[] data;
-            BoxDataReceived.ScrollToEnd();
+            //BoxDataReceived.ScrollToEnd();
             string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
             data = portGCS.ReadLine().Split('#');
+            //MessageBox.Show(Convert.ToString(portGCS.ReadLine()));
             //MessageBox.Show(data[0].ToString());
             //Waypoint
             //Console.WriteLine(data_received);
@@ -1469,9 +1482,35 @@ namespace GCS_WPF_2
                 {
                     MessageBox.Show("Error bgWorker: " + bge.Message);
                 }
-
+                Thread.Sleep(100);
                 //TerimaData(portGCS.ReadLine());
             }
+        }
+
+        private void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+            if (e.Cancelled)
+            {
+
+                Console.WriteLine("Operation Cancelled");
+
+            }
+
+            else if (e.Error != null)
+            {
+
+                Console.WriteLine("Error in BgWorker Process :" + e.Error);
+
+            }
+
+            else
+            {
+
+                Console.WriteLine("Operation Completed :" + e.Result);
+
+            }
+
         }
     }
 }
