@@ -606,7 +606,8 @@ namespace GCS_WPF_2
                 //myMap.ZoomLevel = 1;
                 this.Dispatcher.Invoke(new Action(() =>
                 {
-                    portGCS.Close(); //close the serial port
+                    bgWorker.CancelAsync();
+                    //portGCS.Close(); //close the serial port
                     myMap.Children.Clear();
                     myMap.ZoomLevel = 1;
                 }));
@@ -1487,6 +1488,17 @@ namespace GCS_WPF_2
             SerialPort sp = e.Argument as SerialPort;
             while (portGCS.IsOpen)
             {
+                if (bgWorker.CancellationPending)
+                {
+                    // Pause for a bit to demonstrate that there is time between
+                    // "Cancelling..." and "Cancel ed".
+                    Thread.Sleep(100);
+
+                    // Set the e.Cancel flag so that the WorkerCompleted event
+                    // knows that the process was cancelled.
+                    e.Cancel = true;
+                    return;
+                }
                 try
                 {
                     sp.ReadLine();
@@ -1495,14 +1507,14 @@ namespace GCS_WPF_2
                 {
                     MessageBox.Show("Error bgWorker: " + bge.Message);
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(70);
                 //TerimaData(portGCS.ReadLine());
             }
         }
 
         private void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
+            portGCS.Close();
             if (e.Cancelled)
             {
 
