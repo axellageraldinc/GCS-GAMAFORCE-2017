@@ -56,6 +56,40 @@ namespace GCS_WPF_2
                     }
         }
 
+        public void CreateTable2(string TimeStart)
+        {
+            string Query = "CREATE TABLE IF NOT EXISTS GCS_DB_" + TimeStart + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "ALTITUDE TEXT, "
+                + "YAW TEXT, "
+                + "PITCH TEXT, "
+                + "ROLL TEXT, "
+                + "LAT TEXT, "
+                + "LNG TEXT, "
+                + "TIME TEXT)";
+            SQLiteCommand command = new SQLiteCommand(Query, conn);
+            command.ExecuteNonQuery();
+        }
+
+        public void InsertData2(string TimeStart, string alt, string yaw, string pitch, string roll, string lat, string lng, string time)
+        {
+            //string Query = "INSERT INTO GCS_DB (ALTITUDE, YAW, PITCH, ROLL, LAT, LNG, TIME) " +
+            //    "values ('" + alt + "','" + yaw + "','" + pitch + "','" + roll + 
+            //    "','" + lat + "','" + lng + "','" + time + "')";
+            SQLiteCommand create = new SQLiteCommand(conn);
+            create.CommandText = "INSERT INTO GCS_DB_" + TimeStart + "(ALTITUDE, YAW, PITCH, ROLL, LAT, LNG, TIME) " +
+        "values ('" + alt + "','" + yaw + "','" + pitch + "','" + roll +
+        "','" + lat + "','" + lng + "','" + time + "')";
+            create.Prepare();
+            try
+            {
+                create.ExecuteNonQuery();
+            }
+            catch (SQLiteException ex)
+            {
+                Debug.Write(ex.Message);
+            }
+        }
+
         public void GetData()
         {
             string Query = "SELECT * FROM GCS_DB";
@@ -166,28 +200,29 @@ namespace GCS_WPF_2
 
         public bool ExcelSave(string timeStart, string totalHours, string totalMin, string totalSec)
         {
-            string Query = "CREATE TABLE IF NOT EXISTS GCS_DB_"+timeStart+"(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "ALTITUDE TEXT, "
-                + "YAW TEXT, "
-                + "PITCH TEXT, "
-                + "ROLL TEXT, "
-                + "LAT TEXT, "
-                + "LNG TEXT, "
-                + "TIME TEXT)";
-            SQLiteCommand command = new SQLiteCommand(Query, conn);
-            command.ExecuteNonQuery();
-            SQLiteCommand create = new SQLiteCommand(conn);
-            create.CommandText = "INSERT INTO GCS_DB_"+timeStart+"(ID, ALTITUDE, YAW, PITCH, ROLL, LAT, LNG, TIME) " +
-                "SELECT * FROM GCS_DB";
-            create.Prepare();
-            try
-            {
-                create.ExecuteNonQuery();
-            }
-            catch (SQLiteException ex)
-            {
-                Debug.Write(ex.Message);
-            }
+            //Bawah ini apabila ada 2 DB yaitu GCS_DB (untuk store data sementara) dan GCS_DB_TimeStart
+            //string Query = "CREATE TABLE IF NOT EXISTS GCS_DB_"+timeStart+"(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+            //    + "ALTITUDE TEXT, "
+            //    + "YAW TEXT, "
+            //    + "PITCH TEXT, "
+            //    + "ROLL TEXT, "
+            //    + "LAT TEXT, "
+            //    + "LNG TEXT, "
+            //    + "TIME TEXT)";
+            //SQLiteCommand command = new SQLiteCommand(Query, conn);
+            //command.ExecuteNonQuery();
+            //SQLiteCommand create = new SQLiteCommand(conn);
+            //create.CommandText = "INSERT INTO GCS_DB_"+timeStart+"(ID, ALTITUDE, YAW, PITCH, ROLL, LAT, LNG, TIME) " +
+            //    "SELECT * FROM GCS_DB";
+            //create.Prepare();
+            //try
+            //{
+            //    create.ExecuteNonQuery();
+            //}
+            //catch (SQLiteException ex)
+            //{
+            //    Debug.Write(ex.Message);
+            //}
 
             Excel.Application xlApp;
             Excel.Workbook xlWorkBook;
@@ -204,7 +239,7 @@ namespace GCS_WPF_2
             int i = 0;
             int j = 0;
 
-            string stm = "SELECT * FROM GCS_DB";
+            string stm = "SELECT * FROM GCS_DB_" + timeStart;
             SQLiteCommand cmd = new SQLiteCommand(stm, conn);
             SQLiteDataReader rdr = cmd.ExecuteReader();
             //Kasih nama untuk baris pertama

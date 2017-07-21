@@ -565,6 +565,7 @@ namespace GCS_WPF_2
                 btnConnect.Content = "STOP";
                 //Mulai Timer
                 TimeStart = string.Format("FlightLog__{0:dd_MM_yyyy__HH_mm_ss}", DateTime.Now);
+                db.CreateTable2(TimeStart);
                 start = DateTime.Now;
                 //Timer();
                 TimerFlightTime();
@@ -593,7 +594,7 @@ namespace GCS_WPF_2
                 }
                 db.ExcelSave(TimeStart, TotalHours, TotalMinutes, TotalSeconds);
                 RefreshUI();
-                db.DeleteAllData("GCS_DB");
+                //db.DeleteAllData("GCS_DB");
             }
         }
         private void CloseSerialOnExit()
@@ -1228,6 +1229,14 @@ namespace GCS_WPF_2
 
         public void RefreshUI()
         {
+            ////Code to Restart WPF Application
+
+            ////Start New Application Before Closing Current
+            //Process.Start(Application.ResourceAssembly.Location);
+
+            ////Close the Current
+            //Application.Current.Shutdown();
+
             string angka = "0.000000";
             string angka2 = "00";
 
@@ -1315,6 +1324,7 @@ namespace GCS_WPF_2
         }
         #endregion
 
+        #region Control
         private void btnCalibrate_Click(object sender, RoutedEventArgs e)
         {
             if (portGCS.IsOpen)
@@ -1371,6 +1381,7 @@ namespace GCS_WPF_2
                 MessageBox.Show("Port belum terkoneksi");
             }
         }
+        #endregion
 
         private void SendDataKeController(string namaTabel)
         {
@@ -1389,6 +1400,7 @@ namespace GCS_WPF_2
             }
         }
 
+        #region Background Worker
         // Update UI BoxDataReceived (belum ditest)
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -1424,8 +1436,9 @@ namespace GCS_WPF_2
             //Data biasa
             else if (data[0].ToString().Equals("@0"))
             {
-                db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
-                    Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
+                //db.InsertData(Convert.ToString(data[1]), Convert.ToString(data[2]), Convert.ToString(data[3]),
+                //    Convert.ToString(data[4]), Convert.ToString(data[5]), Convert.ToString(data[6]), time);
+                db.InsertData2(TimeStart, data[1], data[2], data[3], data[4], data[5], data[6], time);
 
                 txtAlt.Content = data[1];
                 txtYaw.Content = data[2];
@@ -1512,5 +1525,6 @@ namespace GCS_WPF_2
             }
 
         }
+        #endregion
     }
 }
