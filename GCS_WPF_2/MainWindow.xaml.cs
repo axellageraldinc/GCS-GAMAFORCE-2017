@@ -1234,7 +1234,7 @@ namespace GCS_WPF_2
         public void PopulateComboBoxRecord()
         {
             DirectoryInfo dinfo = new DirectoryInfo(Environment.CurrentDirectory + @"\FlightRecord\");
-            FileInfo[] Files = dinfo.GetFiles("*.xlsx");
+            FileInfo[] Files = dinfo.GetFiles("*.xlsx").OrderByDescending(p => p.CreationTime).ToArray();
             ComboBoxFlightRecord.Items.Clear();
             foreach (FileInfo file in Files)
             {
