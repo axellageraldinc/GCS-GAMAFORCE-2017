@@ -1,0 +1,57 @@
+﻿<Window x:Class="GCS_WPF_2.ChooseUAV"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GCS_WPF_2"
+        mc:Ignorable="d"
+        Title="GAMAFORCE" Height="292.5" Width="450" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Closed="Window_Closed">
+    <Window.Resources>
+        <DataTemplate x:Key="DevicesListTemplate">
+            <TextBlock Text="{Binding Name}"/>
+        </DataTemplate>
+        <ControlTemplate x:Key="btnTransparentStyle" TargetType="{x:Type Button}">
+            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsDefaulted" Value="True">
+                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" TargetName="border" Value="#00FFFFFF"/>
+                    <Setter Property="BorderBrush" TargetName="border" Value="#00FFFFFF"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" TargetName="border" Value="#00FFFFFF"/>
+                    <Setter Property="BorderBrush" TargetName="border" Value="#00FFFFFF"/>
+                </Trigger>
+                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                    <Setter Property="Background" TargetName="border" Value="#00FFFFFF"/>
+                    <Setter Property="BorderBrush" TargetName="border" Value="#00FFFFFF"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" TargetName="border" Value="#00FFFFFF"/>
+                    <Setter Property="BorderBrush" TargetName="border" Value="#00FFFFFF"/>
+                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#FF838383"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Resources>
+    <Grid>
+        
+        <Label x:Name="label" Content="Choose your UAV" Margin="164,10,172,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="114" FontFamily="Arial Rounded MT Bold"/>
+        <Image x:Name="FW_Selected" HorizontalAlignment="Left" Height="100" Margin="58,51,0,0" VerticalAlignment="Top" Width="100" Source="Resources/FW-Selected.png"/>
+        <Image x:Name="Quad_Biasa" HorizontalAlignment="Left" Height="100" Margin="294,51,0,0" VerticalAlignment="Top" Width="100" Source="Resources/Quad-Biasa.png"/>
+        <Label x:Name="label1" Content="Fixed Wing" HorizontalAlignment="Left" Margin="73,173,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label1_Copy" Content="Quadcopter" HorizontalAlignment="Left" Margin="307,173,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnNext" Content="NEXT" HorizontalAlignment="Left" Margin="191,227,0,0" VerticalAlignment="Top" Width="75" Click="btnNext_Click"/>
+        <Label x:Name="label1_Copy1" Content="Selected :" HorizontalAlignment="Left" Margin="10,225,0,0" VerticalAlignment="Top" FontSize="9"/>
+        <Label x:Name="txtSelectedUAV" Content="UAV" HorizontalAlignment="Left" Margin="58,225,0,0" VerticalAlignment="Top" FontSize="9"/>
+        <Image x:Name="FW_Biasa" HorizontalAlignment="Left" Height="100" Margin="58,51,0,0" VerticalAlignment="Top" Width="100" Source="Resources/FW-Biasa.png" Visibility="Hidden"/>
+        <Image x:Name="Quad_Selected" HorizontalAlignment="Left" Height="100" Margin="294,51,0,0" VerticalAlignment="Top" Width="100" Source="Resources/Quad-Selected.png" Visibility="Hidden"/>
+        <Button x:Name="btnFW" Content="Button" HorizontalAlignment="Left" Height="100" Margin="58,51,0,0" VerticalAlignment="Top" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Template="{DynamicResource btnTransparentStyle}" Click="btnFW_Click"/>
+        <Button x:Name="btnQuad" Content="Button" HorizontalAlignment="Left" Height="100" Margin="294,51,0,0" VerticalAlignment="Top" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Template="{DynamicResource btnTransparentStyle}" Click="btnQuad_Click"/>
+
+    </Grid>
+</Window>

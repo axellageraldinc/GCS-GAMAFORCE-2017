@@ -195,8 +195,6 @@ C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Micr
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\System.Data.SQLite.dll
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\System.Data.SQLite.EF6.dll
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\System.Data.SQLite.Linq.dll
-C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Utilities.dll
-C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Types.dll
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.xml
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Imaging.xml
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\AForge.Math.xml
@@ -207,9 +205,6 @@ C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Enti
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\EntityFramework.SqlServer.xml
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HUD.pdb
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\System.Data.SQLite.xml
-C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Utilities.xml
-C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Microsoft.Expression.Encoder.Types.xml
-C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.csprojResolveAssemblyReference.cache
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\HUD_Big.g.cs
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\MainWindow.g.cs
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\App.g.cs
@@ -228,3 +223,6 @@ C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\Heli
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HelixToolkit.Wpf.pdb
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\bin\Debug\HelixToolkit.Wpf.xml
 C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\Test3D.baml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\ChooseUAV.g.cs
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\ChooseUAV.baml
+C:\Users\Axellageraldinc A\Documents\GCS_Gamaforce_2017\GCS_WPF_2\obj\Debug\GCS_WPF_2.csprojResolveAssemblyReference.cache

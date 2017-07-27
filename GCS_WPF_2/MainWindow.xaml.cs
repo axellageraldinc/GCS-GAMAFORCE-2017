@@ -46,8 +46,11 @@ namespace GCS_WPF_2
 
         private static BackgroundWorker bgWorker;
 
+        private int StatusWaypoint = 0;
+
         //Path to the model file
-        private const string MODEL_PATH = "C:\\Users\\Axellageraldinc A\\Documents\\GCS_Gamaforce_2017\\GCS_WPF_2\\dronev3.obj";
+        private const string MODEL_PATH_FW = "C:\\Users\\Axellageraldinc A\\Documents\\GCS_Gamaforce_2017\\GCS_WPF_2\\ModelFWdariBlender.obj";
+        private const string MODEL_PATH_QUAD = "C:\\Users\\Axellageraldinc A\\Documents\\GCS_Gamaforce_2017\\GCS_WPF_2\\QuaddariBlender.obj";
         ModelVisual3D device3D = new ModelVisual3D();
 
         private FilterInfoCollection VideoCaptureDevices;
@@ -77,10 +80,13 @@ namespace GCS_WPF_2
         double YawBaru=0, PitchBaru=0, RollBaru=0;
         double YawLama = 0, PitchLama = 0, RollLama = 0;
 
+        int statusUAV = 0;
+
         #endregion
 
-        public MainWindow()
+        public MainWindow(int statusUAV)
         {
+            this.statusUAV = statusUAV;
             InitializeComponent();
             System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
@@ -101,11 +107,23 @@ namespace GCS_WPF_2
                 Console.ReadLine();
 
             }
+            if (statusUAV == 0)
+            {
+                //Load3DModel();
+                device3D.Content = Display3d(MODEL_PATH_FW);
+                // Add to view port
+                viewPort3d.Children.Add(device3D);
+                //Pitch3D(-90);
+            }
+            else
+            {
+                //Load3DModel();
+                device3D.Content = Display3d(MODEL_PATH_QUAD);
+                // Add to view port
+                viewPort3d.Children.Add(device3D);
+                //Pitch3D(-90);
+            }
 
-            device3D.Content = Display3d(MODEL_PATH);
-            // Add to view port
-            viewPort3d.Children.Add(device3D);
-            Pitch3D(-90);
 
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
             db = new DBHelper();
@@ -139,6 +157,15 @@ namespace GCS_WPF_2
         #endregion
 
         #region 3D Visualization
+        //private void Load3DModel()
+        //{
+        //    //Import 3D model file
+        //    ObjReader CurrentHelixObjReader = new ObjReader();
+        //    // Model3DGroup MyModel = CurrentHelixObjReader.Read(@"D:\3DModel\dinosaur_FBX\dinosaur.fbx");
+        //    Model3DGroup MyModel = CurrentHelixObjReader.Read(MODEL_PATH);
+        //    modell.Content = MyModel;
+        //    //MyModel.Children.Add(MyModel);
+        //}
         private Model3D Display3d(string model)
         {
             Model3D device = null;
@@ -148,6 +175,11 @@ namespace GCS_WPF_2
                 //viewPort3d.RotateGesture = new MouseGesture(MouseAction.LeftClick);
 
                 //Import 3D model file
+                //ObjReader CurrentHelixObjReader = new ObjReader();
+                //// Model3DGroup MyModel = CurrentHelixObjReader.Read(@"D:\3DModel\dinosaur_FBX\dinosaur.fbx");
+                //Model3DGroup MyModel = CurrentHelixObjReader.Read(MODEL_PATH);
+                //modell.Content = MyModel;
+                //MyModel.Children.Add(MyModel);
                 ModelImporter import = new ModelImporter();
 
                 //Load the 3D model file
@@ -367,62 +399,70 @@ namespace GCS_WPF_2
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         private void MapWithPushpins_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            // Disables the default mouse double-click action.
-            e.Handled = true;
-
-            // Determin the location to place the pushpin at on the map.
-
-            //Get the mouse click coordinates
-            Point mousePosition = e.GetPosition(myMap);
-            //Convert the mouse coordinates to a location on the map
-            Location pinLocation = myMap.ViewportPointToLocation(mousePosition);
-
-            // The pushpin to add to the map.
-            Pushpin pin = new Pushpin();
-            pin.Location = pinLocation;
-            // Adds the pushpin to the map.
-            //myMap.Children.Add(pin);
-            //Ambil latitude dan longitude dari pushpin
-            double Latitude = pin.Location.Latitude;
-            double Longitude = pin.Location.Longitude;
-            if (i == 5)
+            if (StatusWaypoint == 0)
             {
-                i = 1;
-                //myMap.Children.Clear();
-                Image image = new Image();
-                removePin(image);
+                MessageBox.Show("Klik terlebih dahulu tombol waypoint di bagian Control.");
             }
-            lat[i-1] = Latitude; lng[i-1] = Longitude;
-            AddCustomPin("pin.png", Latitude, Longitude, "Point ke-"+i);
-            //BoxTestSerial.Text = (string.Format("{0:0.000000}", Latitude) + "," + string.Format("{0:0.000000}", Longitude));
-            //Kirim latitude dan longitude ke controller
-            try
+            else
             {
-                //int x = 1;
-                //byte[] b = BitConverter.GetBytes(x);
-                //portGCS.Write(b, 0, 4);
-                //portGCS.Write("SEMPAK:");
-                //portGCS.Write("waypoint:");
-                if (i == 4)
+                // Disables the default mouse double-click action.
+                e.Handled = true;
+
+                // Determine the location to place the pushpin at on the map.
+
+                //Get the mouse click coordinates
+                Point mousePosition = e.GetPosition(myMap);
+                //Convert the mouse coordinates to a location on the map
+                Location pinLocation = myMap.ViewportPointToLocation(mousePosition);
+
+                // The pushpin to add to the map.
+                Pushpin pin = new Pushpin();
+                pin.Location = pinLocation;
+                // Adds the pushpin to the map.
+                //myMap.Children.Add(pin);
+                //Ambil latitude dan longitude dari pushpin
+                double Latitude = pin.Location.Latitude;
+                double Longitude = pin.Location.Longitude;
+                if (i == 5)
                 {
-                    string datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}#{2:0.0000000}#{3:0.0000000}#{4:0.0000000}#{5:0.0000000}#{6:0.0000000}#{7:0.0000000}*",
-                        new object[] { this.lat[0], this.lng[0], this.lat[1], this.lng[1], this.lat[2], this.lng[2], this.lat[3], this.lng[3] });
-                    portGCS.Write(datapoint);
-                    Console.WriteLine(datapoint);
+                    i = 1;
+                    //myMap.Children.Clear();
+                    Image image = new Image();
+                    removePin(image);
                 }
-                i++;
-                string lat = string.Format("{0:0.000000}", Latitude);
-                //portGCS.Write(lat + ":");
-                string lng = string.Format("{0:0.000000}", Longitude);
-                //portGCS.Write(lng + ":");
-                label_Test.Content = lat + "," + lng;
-                string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
-                //db.InsertData("", "", "", "", Convert.ToString(lat), Convert.ToString(lng), time);
+                lat[i - 1] = Latitude; lng[i - 1] = Longitude;
+                AddCustomPin("pin.png", Latitude, Longitude, "Point ke-" + i);
+                //BoxTestSerial.Text = (string.Format("{0:0.000000}", Latitude) + "," + string.Format("{0:0.000000}", Longitude));
+                //Kirim latitude dan longitude ke controller
+                try
+                {
+                    //int x = 1;
+                    //byte[] b = BitConverter.GetBytes(x);
+                    //portGCS.Write(b, 0, 4);
+                    //portGCS.Write("SEMPAK:");
+                    //portGCS.Write("waypoint:");
+                    if (i == 4)
+                    {
+                        string datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}#{2:0.0000000}#{3:0.0000000}#{4:0.0000000}#{5:0.0000000}#{6:0.0000000}#{7:0.0000000}*",
+                            new object[] { this.lat[0], this.lng[0], this.lat[1], this.lng[1], this.lat[2], this.lng[2], this.lat[3], this.lng[3] });
+                        portGCS.Write(datapoint);
+                        Console.WriteLine(datapoint);
+                    }
+                    i++;
+                    string lat = string.Format("{0:0.000000}", Latitude);
+                    //portGCS.Write(lat + ":");
+                    string lng = string.Format("{0:0.000000}", Longitude);
+                    //portGCS.Write(lng + ":");
+                    label_Test.Content = lat + "," + lng;
+                    string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
+                    //db.InsertData("", "", "", "", Convert.ToString(lat), Convert.ToString(lng), time);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            
         }
         private void AddCustomPin(string NamaGambar, double latt, double lngg, string teks)
         {
@@ -643,6 +683,7 @@ namespace GCS_WPF_2
                 portGCS.Open();
                 //Data yang diterima, dioperasikan di method portGCS_DataReceived
                 portGCS.DataReceived += new SerialDataReceivedEventHandler(portGCS_DataReceived);
+                myMap.ZoomLevel = 17;
                 // Background worker jalan async, gak ganggu UI thread (belum ditest)
                 //bgWorker.RunWorkerAsync(portGCS);
             }
@@ -720,7 +761,7 @@ namespace GCS_WPF_2
             try
             {
                 string[] data;
-                BoxDataReceived.ScrollToEnd();
+                //BoxDataReceived.ScrollToEnd();
                 string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
                 #region TerimaDataAxellOld
                 ////String yang diterima dari port dipisah menggunakan pemisah yang disepakati
@@ -767,7 +808,7 @@ namespace GCS_WPF_2
                     lng1 = lng[0]; lng2 = lng[1]; lng3 = lng[2]; lng4 = lng[3];
                     Location position = new Location(lat1, lng1);
                     myMap.Center = position;
-                    myMap.ZoomLevel = 17;
+                    //myMap.ZoomLevel = 17;
                     //MessageBox.Show(lat1.ToString() + "," + lng1.ToString()
                     //    + "\n" + lat2.ToString() + "," + lng2.ToString()
                     //    + "\n" + lat3.ToString() + "," + lng3.ToString()
@@ -824,7 +865,7 @@ namespace GCS_WPF_2
                     TrackDroneIcon(Lat, Lng);
                     position = new Location(Lat, Lng);
                     myMap.Center = position; //center position sesuai lokasi drone
-                    myMap.ZoomLevel = 17;
+                    //myMap.ZoomLevel = 17;
 
                     double cekToleransi1 = 0, cekToleransi2 = 0, cekToleransi3 = 0, cekToleransi4 = 0;
 
@@ -1118,7 +1159,15 @@ namespace GCS_WPF_2
             image.Width = 30;
             //Define the URI location of the image
             BitmapImage myBitmapImage = new BitmapImage();
-            Uri uri = new Uri("/Resources/drone.png", UriKind.Relative);
+            Uri uri;
+            if (statusUAV == 0)
+            {
+                uri = new Uri("/Resources/Quad_Biasa.png", UriKind.Relative);
+            }
+            else
+            {
+                uri = new Uri("/Resources/FW_Biasa.png", UriKind.Relative);
+            }
             myBitmapImage.BeginInit();
             myBitmapImage.UriSource = uri;
             myBitmapImage.DecodePixelHeight = 150;
@@ -1195,6 +1244,7 @@ namespace GCS_WPF_2
             {
                 try
                 {
+                    StatusWaypoint = 1;
                     portGCS.Write("w");
                 }
                 catch (Exception ex)
@@ -1286,7 +1336,7 @@ namespace GCS_WPF_2
 
             PopulateComboBoxRecord();
 
-            BoxDataReceived.Text = "Data received goes here...";
+            //BoxDataReceived.Text = "Data received goes here...";
         }
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1329,8 +1379,20 @@ namespace GCS_WPF_2
         {
             try
             {
-                string kata = BoxCommand.Text;
-                portGCS.Write(kata);
+                int n = 8;
+                string[] waypoint = BoxCommand.Text.Split(',');
+                string datapoint = "@20";
+                for (i=0; i<n; i++)
+                {
+                    datapoint = datapoint + "#" +waypoint[i];
+                }
+                datapoint = datapoint + "*";
+                //string datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}#{2:0.0000000}#{3:0.0000000}#{4:0.0000000}#{5:0.0000000}#{6:0.0000000}#{7:0.0000000}*",
+                //        new object[] { waypoint[0], waypoint[1], waypoint[2], waypoint[3], waypoint[4], waypoint[5], waypoint[6], waypoint[7] });
+                MessageBox.Show(datapoint);
+                portGCS.Write(datapoint);
+                //Console.WriteLine(datapoint);
+                //portGCS.Write(kata);
             }
             catch (Exception ex)
             {
