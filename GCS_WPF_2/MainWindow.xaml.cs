@@ -49,8 +49,8 @@ namespace GCS_WPF_2
         private int StatusWaypoint = 0;
 
         //Path to the model file
-        private const string MODEL_PATH_FW = "C:\\Users\\Axellageraldinc A\\Documents\\GCS_Gamaforce_2017\\GCS_WPF_2\\ModelFWdariBlender.obj";
-        private const string MODEL_PATH_QUAD = "C:\\Users\\Axellageraldinc A\\Documents\\GCS_Gamaforce_2017\\GCS_WPF_2\\QuaddariBlender.obj";
+        private const string MODEL_PATH_FW = @"/Resources/ModelFWdariBlender.obj";
+        private const string MODEL_PATH_QUAD = "\\Resources\\QuaddariBlender.obj";
         ModelVisual3D device3D = new ModelVisual3D();
 
         private FilterInfoCollection VideoCaptureDevices;
@@ -107,10 +107,11 @@ namespace GCS_WPF_2
                 Console.ReadLine();
 
             }
+            Uri uri;
             if (statusUAV == 0)
             {
                 //Load3DModel();
-                device3D.Content = Display3d(MODEL_PATH_FW);
+                device3D.Content = Display3d(System.AppDomain.CurrentDomain.BaseDirectory + "modelFWdariblender.obj");
                 // Add to view port
                 viewPort3d.Children.Add(device3D);
                 //Pitch3D(-90);
@@ -118,7 +119,7 @@ namespace GCS_WPF_2
             else
             {
                 //Load3DModel();
-                device3D.Content = Display3d(MODEL_PATH_QUAD);
+                device3D.Content = Display3d(System.AppDomain.CurrentDomain.BaseDirectory + "QuaddariBlender.obj");
                 // Add to view port
                 viewPort3d.Children.Add(device3D);
                 //Pitch3D(-90);
