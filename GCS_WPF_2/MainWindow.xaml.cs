@@ -426,41 +426,45 @@ namespace GCS_WPF_2
                 double Longitude = pin.Location.Longitude;
                 if (i == 5)
                 {
-                    i = 1;
-                    //myMap.Children.Clear();
-                    Image image = new Image();
-                    removePin(image);
+                    MessageBox.Show("Silakan hapus terlebih dahulu waypoint yang ada. Maksimal hanya 4 waypoint!");
+                    //i = 1;
+                    ////myMap.Children.Clear();
+                    //Image image = new Image();
+                    //removePin(image);
                 }
-                lat[i - 1] = Latitude; lng[i - 1] = Longitude;
-                AddCustomPin("pin.png", Latitude, Longitude, "Point ke-" + i);
-                //BoxTestSerial.Text = (string.Format("{0:0.000000}", Latitude) + "," + string.Format("{0:0.000000}", Longitude));
-                //Kirim latitude dan longitude ke controller
-                try
+                else
                 {
-                    //int x = 1;
-                    //byte[] b = BitConverter.GetBytes(x);
-                    //portGCS.Write(b, 0, 4);
-                    //portGCS.Write("SEMPAK:");
-                    //portGCS.Write("waypoint:");
-                    if (i == 4)
+                    lat[i - 1] = Latitude; lng[i - 1] = Longitude;
+                    AddCustomPin("pin.png", Latitude, Longitude, "Point ke-" + i);
+                    //BoxTestSerial.Text = (string.Format("{0:0.000000}", Latitude) + "," + string.Format("{0:0.000000}", Longitude));
+                    //Kirim latitude dan longitude ke controller
+                    try
                     {
-                        string datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}#{2:0.0000000}#{3:0.0000000}#{4:0.0000000}#{5:0.0000000}#{6:0.0000000}#{7:0.0000000}*",
-                            new object[] { this.lat[0], this.lng[0], this.lat[1], this.lng[1], this.lat[2], this.lng[2], this.lat[3], this.lng[3] });
-                        portGCS.Write(datapoint);
-                        Console.WriteLine(datapoint);
+                        //int x = 1;
+                        //byte[] b = BitConverter.GetBytes(x);
+                        //portGCS.Write(b, 0, 4);
+                        //portGCS.Write("SEMPAK:");
+                        //portGCS.Write("waypoint:");
+                        if (i == 4)
+                        {
+                            string datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}#{2:0.0000000}#{3:0.0000000}#{4:0.0000000}#{5:0.0000000}#{6:0.0000000}#{7:0.0000000}*",
+                                new object[] { this.lat[0], this.lng[0], this.lat[1], this.lng[1], this.lat[2], this.lng[2], this.lat[3], this.lng[3] });
+                            portGCS.Write(datapoint);
+                            Console.WriteLine(datapoint);
+                        }
+                        i++;
+                        string lat = string.Format("{0:0.000000}", Latitude);
+                        //portGCS.Write(lat + ":");
+                        string lng = string.Format("{0:0.000000}", Longitude);
+                        //portGCS.Write(lng + ":");
+                        label_Test.Content = lat + "," + lng;
+                        string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
+                        //db.InsertData("", "", "", "", Convert.ToString(lat), Convert.ToString(lng), time);
                     }
-                    i++;
-                    string lat = string.Format("{0:0.000000}", Latitude);
-                    //portGCS.Write(lat + ":");
-                    string lng = string.Format("{0:0.000000}", Longitude);
-                    //portGCS.Write(lng + ":");
-                    label_Test.Content = lat + "," + lng;
-                    string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
-                    //db.InsertData("", "", "", "", Convert.ToString(lat), Convert.ToString(lng), time);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
             }
             
@@ -510,6 +514,7 @@ namespace GCS_WPF_2
             //Add the image to the defined map layer
             MapLayer.SetPosition(canvas, loc);
             imageLayer.AddChild(canvas, loc, position);
+            imageLayer.Tag = "waypointPin";
             //Add the image layer to the map
             myMap.Children.Add(imageLayer);
         }
@@ -1038,6 +1043,13 @@ namespace GCS_WPF_2
             return (rad / Math.PI * 180.0);
         }
 
+        private void btnClearWaypointPin_Click(object sender, RoutedEventArgs e)
+        {
+            Image image = new Image();
+            removePin(image, "waypointPin");
+            i = 1;
+        }
+
         private void myMap_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (i == 5)
@@ -1045,7 +1057,7 @@ namespace GCS_WPF_2
                 i = 1;
                 //myMap.Children.Clear();
                 Image image = new Image();
-                removePin(image);
+                removePin(image, "waypointPin");
             }
         }
 
@@ -1155,7 +1167,7 @@ namespace GCS_WPF_2
         {
             MapLayer imageLayer = new MapLayer();
             Image image = new Image();
-            removePin(image);
+            removePin(image, "icon");
             image.Height = 30;
             image.Width = 30;
             //Define the URI location of the image
@@ -1205,7 +1217,7 @@ namespace GCS_WPF_2
         #endregion
 
         #region RemovePin
-        private void removePin(Image image)
+        private void removePin(Image image, String tag)
         {
             //                   ***REMOVE ICON***
             List<UIElement> elementsToRemove = new List<UIElement>();
@@ -1214,7 +1226,7 @@ namespace GCS_WPF_2
             {
                 foreach (UIElement p in myMap.Children.OfType<MapLayer>())
                 {
-                    if ((((MapLayer)p).Tag) == "icon")
+                    if ((((MapLayer)p).Tag) == tag)
                     {
                         pushpinToRemove.Add(p);
                     }
@@ -1246,7 +1258,7 @@ namespace GCS_WPF_2
                 try
                 {
                     StatusWaypoint = 1;
-                    portGCS.Write("w");
+                    //portGCS.Write("w");
                 }
                 catch (Exception ex)
                 {
@@ -1383,7 +1395,7 @@ namespace GCS_WPF_2
                 int n = 8;
                 string[] waypoint = BoxCommand.Text.Split(',');
                 string datapoint = "@20";
-                for (i=0; i<n; i++)
+                for (i=0; i<4; i++)
                 {
                     datapoint = datapoint + "#" +waypoint[i];
                 }

@@ -8,9 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/fw-biasa.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/fw-selected.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/quad-biasa.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/quad-selected.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/splash.png")]
 
 

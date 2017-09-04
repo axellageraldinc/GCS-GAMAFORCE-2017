@@ -114,9 +114,10 @@
                     <DropShadowEffect Direction="270" BlurRadius="10" ShadowDepth="2"/>
                 </Rectangle.Effect>
             </Rectangle>
-            <m:Map x:Name="myMap" CredentialsProvider="Am8VDrB5d9PouPBAl9DJ5sMt6diIn5QfT7ddusUA3_6zYYF0je2wkgLpppszCHzD" Height="490" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="529" MouseDoubleClick="MapWithPushpins_MouseDoubleClick" MouseLeftButtonDown="myMap_MouseLeftButtonDown"/>
+            <m:Map x:Name="myMap" CredentialsProvider="Am8VDrB5d9PouPBAl9DJ5sMt6diIn5QfT7ddusUA3_6zYYF0je2wkgLpppszCHzD" Height="490" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="529" MouseDoubleClick="MapWithPushpins_MouseDoubleClick"/>
             <Rectangle Fill="#FF3993CF" HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="529"/>
             <Label x:Name="label_Copy2" Content="UAV LOCATION" HorizontalAlignment="Center" Margin="1,1,364,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="White" Width="164"/>
+            <Button x:Name="btnClearWaypointPin" Content="CLEAR PIN" HorizontalAlignment="Left" Margin="444,6,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FF3993CF" Template="{DynamicResource btnClickStyle}" Click="btnClearWaypointPin_Click"/>
         </Grid>
         <Button x:Name="btnRefresh" Content="REFRESH" HorizontalAlignment="Left" Margin="479,68,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" Click="btnRefresh_Click" BorderThickness="1" Template="{DynamicResource btnClickStyle}"/>
 
@@ -152,7 +153,7 @@
         <Slider Name="Slider_Pitch" Minimum="-90" Maximum="90" Value="0" TickFrequency="10" TickPlacement="BottomRight"  VerticalAlignment="Center" Margin="281,690,880,6" Visibility="Hidden"/>
         <Slider Name="Slider_Roll" Minimum="-180" Maximum="180" Value="0" TickFrequency="20" TickPlacement="BottomRight"  VerticalAlignment="Center" Margin="151,691,1020,5" Visibility="Hidden"/>
 
-        <TextBox x:Name="BoxCommand" HorizontalAlignment="Left" Height="25" Margin="19,660,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="455" BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Terminal" VerticalContentAlignment="Center">
+        <TextBox x:Name="BoxCommand" HorizontalAlignment="Left" Height="25" Margin="21,660,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="453" BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Terminal" VerticalContentAlignment="Center">
             <TextBox.Effect>
                 <DropShadowEffect BlurRadius="10" Direction="320" ShadowDepth="2"/>
             </TextBox.Effect>
