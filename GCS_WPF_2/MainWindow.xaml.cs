@@ -457,7 +457,7 @@ namespace GCS_WPF_2
                         //portGCS.Write(lat + ":");
                         string lng = string.Format("{0:0.000000}", Longitude);
                         //portGCS.Write(lng + ":");
-                        label_Test.Content = lat + "," + lng;
+                        //label_Test.Content = lat + "," + lng;
                         string time = string.Format("{0:HH:mm:ss}", DateTime.Now);
                         //db.InsertData("", "", "", "", Convert.ToString(lat), Convert.ToString(lng), time);
                     }
@@ -576,6 +576,7 @@ namespace GCS_WPF_2
             {
                 comboBoxPort.Items.Add(s);
             }
+            //comboBoxPort.Items.Add("COM 3");
             comboBoxPort.SelectedIndex = 0;
             //show list of valid baud rate
             int[] baudRate = { 4800, 9600, 19200, 38400, 57600, 115200, 230400 };
@@ -609,7 +610,7 @@ namespace GCS_WPF_2
         {
             if (btnConnect.Content.Equals("CONNECT"))
             {
-                //PlotGraphic();
+                PlotGraphic();
                 ConnectPortBaudAttempt();
                 btnConnect.Content = "STOP";
                 //Mulai Timer
@@ -819,7 +820,7 @@ namespace GCS_WPF_2
                     //    + "\n" + lat2.ToString() + "," + lng2.ToString()
                     //    + "\n" + lat3.ToString() + "," + lng3.ToString()
                     //    + "\n" + lat4.ToString() + "," + lng4.ToString());
-    }
+                }
                 //Data biasa
                 else if (data[0].ToString().Equals("@0"))
                 {
@@ -846,6 +847,7 @@ namespace GCS_WPF_2
                     db.InsertData2(TimeStart, data[1], data[2], data[3], data[4], data[5], data[6], time);
 
                     txtAlt.Content = data[1];
+                    altitude = Convert.ToDouble(data[1]);
                     txtYaw.Content = data[2];
                     YawBaru = Convert.ToDouble(data[2]);
                     Yaw3D(YawBaru-YawLama);
@@ -891,26 +893,26 @@ namespace GCS_WPF_2
                     //double dLat3 = rLat3 * rLat3; double dLng3 = rLng3 * rLng3;
                     //double dLat4 = rLat4 * rLat4; double dLng4 = rLng4 * rLng4;
 
-                    //if (cekToleransi1<=0.004)
-                    //{
-                    //    AddCustomPin("pinHome.png", lat1, lng1, "");
-                    //    //MessageBox.Show("LatLng1 SUKSES");
-                    //}
-                    //if (cekToleransi2<=0.004)
-                    //{
-                    //    AddCustomPin("pinHome.png", lat2, lng2, "");
-                    //    //MessageBox.Show("LatLng2 SUKSES");
-                    //}
-                    //if (cekToleransi3 <= 0.004)
-                    //{
-                    //    AddCustomPin("pinHome.png", lat3, lng3, "");
-                    //    //MessageBox.Show("LatLng3 SUKSES");
-                    //}
-                    //if (cekToleransi4 <= 0.004)
-                    //{
-                    //    AddCustomPin("pinHome.png", lat4, lng4, "");
-                    //    //MessageBox.Show("LatLng4 SUKSES");
-                    //}
+                    if (cekToleransi1 <= 0.004)
+                    {
+                        AddCustomPin("pinHome.png", lat1, lng1, "");
+                        //MessageBox.Show("LatLng1 SUKSES");
+                    }
+                    if (cekToleransi2 <= 0.004)
+                    {
+                        AddCustomPin("pinHome.png", lat2, lng2, "");
+                        //MessageBox.Show("LatLng2 SUKSES");
+                    }
+                    if (cekToleransi3 <= 0.004)
+                    {
+                        AddCustomPin("pinHome.png", lat3, lng3, "");
+                        //MessageBox.Show("LatLng3 SUKSES");
+                    }
+                    if (cekToleransi4 <= 0.004)
+                    {
+                        AddCustomPin("pinHome.png", lat4, lng4, "");
+                        //MessageBox.Show("LatLng4 SUKSES");
+                    }
 
                     #region HUD_Control
                     Slider_Yaw.Value = Convert.ToDouble(txtYaw.Content);
@@ -1168,18 +1170,18 @@ namespace GCS_WPF_2
             MapLayer imageLayer = new MapLayer();
             Image image = new Image();
             removePin(image, "icon");
-            image.Height = 30;
-            image.Width = 30;
+            image.Height = 40;
+            image.Width = 40;
             //Define the URI location of the image
             BitmapImage myBitmapImage = new BitmapImage();
             Uri uri;
-            if (statusUAV == 0)
+            if (statusUAV == 1)
             {
-                uri = new Uri("/Resources/Quad_Biasa.png", UriKind.Relative);
+                uri = new Uri("/Resources/Quad-Selected.png", UriKind.Relative);
             }
             else
             {
-                uri = new Uri("/Resources/FW_Biasa.png", UriKind.Relative);
+                uri = new Uri("/Resources/FW-Selected.png", UriKind.Relative);
             }
             myBitmapImage.BeginInit();
             myBitmapImage.UriSource = uri;
