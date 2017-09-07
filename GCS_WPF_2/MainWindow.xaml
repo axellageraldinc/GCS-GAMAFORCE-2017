@@ -10,7 +10,7 @@
         xmlns:hud="clr-namespace:HUD;assembly=HUD"
         xmlns:local="clr-namespace:GCS_WPF_2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1280" WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Background="#FF2C3E50">
+        Title="MainWindow" Height="720" Width="1280" WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Background="#FF2C3E50" Icon="Resources/LogoGambarPutihIcon.ico">
     <Window.Resources>
         <DataTemplate x:Key="DevicesListTemplate">
             <TextBlock Text="{Binding Name}"/>
@@ -94,13 +94,13 @@
         <!--<Grid Margin="576,156,176,74">
         </Grid>-->
         <Image x:Name="batt_icon" HorizontalAlignment="Left" Height="145" Margin="1127,458,0,0" VerticalAlignment="Top" Width="135" Source="Resources/battery2.png" Stretch="Fill"/>
-        <Grid x:Name="GridPortSetting" Margin="16,33,816,629">
-            <Label x:Name="label_Copy5" Content="PORT SETTING" HorizontalAlignment="Center" Margin="0,0,284,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="#FF87898F" Width="164"/>
-            <Label x:Name="label1" Content="PORT" HorizontalAlignment="Left" Margin="7,32,0,0" VerticalAlignment="Top" Foreground="White"/>
-            <ComboBox x:Name="comboBoxPort" HorizontalAlignment="Left" Margin="47,35,0,0" VerticalAlignment="Top" Width="120"/>
-            <Label x:Name="label1_Copy" Content="BAUD RATE" HorizontalAlignment="Left" Margin="167,32,0,0" VerticalAlignment="Top" Foreground="White"/>
-            <ComboBox x:Name="comboBoxBaud" HorizontalAlignment="Left" Margin="240,35,0,0" VerticalAlignment="Top" Width="120"/>
-            <Button x:Name="btnConnect" Content="CONNECT" HorizontalAlignment="Left" Margin="373,35,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" Click="btnConnect_Click" BorderThickness="1" Template="{DynamicResource btnClickStyle}"/>
+        <Grid x:Name="GridPortSetting" Margin="570,35,262,627">
+            <Label x:Name="label1" Content="PORT" HorizontalAlignment="Left" Margin="7,21,0,0" VerticalAlignment="Top" Foreground="White"/>
+            <ComboBox x:Name="comboBoxPort" HorizontalAlignment="Left" Margin="47,24,0,0" VerticalAlignment="Top" Width="120"/>
+            <Label x:Name="label1_Copy" Content="BAUD RATE" HorizontalAlignment="Left" Margin="167,21,0,0" VerticalAlignment="Top" Foreground="White"/>
+            <ComboBox x:Name="comboBoxBaud" HorizontalAlignment="Left" Margin="240,24,0,0" VerticalAlignment="Top" Width="120"/>
+            <Button x:Name="btnConnect" Content="CONNECT" HorizontalAlignment="Left" Margin="373,24,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" Click="btnConnect_Click" BorderThickness="1" Template="{DynamicResource btnClickStyle}"/>
+            <Label x:Name="label1_Copy1" Content="LOG" HorizontalAlignment="Left" Margin="13,49,0,-17" VerticalAlignment="Top" Foreground="White"/>
         </Grid>
         <Button x:Name="btnExit" Content="X" HorizontalAlignment="Left" Margin="1247,0,0,0" VerticalAlignment="Top" Width="33" Height="24" Background="#FF3993CF" Foreground="White" BorderBrush="{x:Null}" BorderThickness="0" Template="{DynamicResource btnExitStyle}" Click="btnExit_Click"/>
         <!--<TextBox x:Name="BoxDataReceived" HorizontalAlignment="Left" Height="25" Margin="19,655,0,0" TextWrapping="Wrap" Text="Data received goes here..." VerticalAlignment="Top" Width="540" BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Terminal" FontSize="10.667" VerticalContentAlignment="Center" Visibility="Hidden">
@@ -119,7 +119,7 @@
             <Label x:Name="label_Copy2" Content="UAV LOCATION" HorizontalAlignment="Center" Margin="1,1,364,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="White" Width="164"/>
             <Button x:Name="btnClearWaypointPin" Content="CLEAR PIN" HorizontalAlignment="Left" Margin="444,6,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FF3993CF" Template="{DynamicResource btnClickStyle}" Click="btnClearWaypointPin_Click"/>
         </Grid>
-        <Button x:Name="btnRefresh" Content="REFRESH" HorizontalAlignment="Left" Margin="479,68,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" Click="btnRefresh_Click" BorderThickness="1" Template="{DynamicResource btnClickStyle}"/>
+        <Button x:Name="btnRefresh" Content="REFRESH" HorizontalAlignment="Left" Margin="1033,59,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" Click="btnRefresh_Click" BorderThickness="1" Template="{DynamicResource btnClickStyle}"/>
 
         <Button x:Name="btnCalibrate" Content="CALIBRATE" HorizontalAlignment="Left" Margin="1159,189,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnCalibrate_Click"/>
         <Grid x:Name="GridFlightTime" Margin="1124,655,14,5">
@@ -163,8 +163,8 @@
                 <DropShadowEffect BlurRadius="10" Direction="320" ShadowDepth="2"/>
             </Button.Effect>
         </Button>
-        <ComboBox x:Name="ComboBoxFlightRecord" HorizontalAlignment="Left" Margin="1064,35,0,0" VerticalAlignment="Top" Width="120" Height="21"/>
-        <Button x:Name="btnOpenLogFile" Content="OPEN LOG" HorizontalAlignment="Left" Margin="1191,34,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" BorderThickness="1" Template="{DynamicResource btnClickStyle}" Click="btnOpenLogFile_Click"/>
+        <ComboBox x:Name="ComboBoxFlightRecord" HorizontalAlignment="Left" Margin="617,87,0,0" VerticalAlignment="Top" Width="314" Height="21"/>
+        <Button x:Name="btnOpenLogFile" Content="OPEN LOG" HorizontalAlignment="Left" Margin="943,86,0,0" VerticalAlignment="Top" Width="75" Height="23" Background="#FFE74C3C" Foreground="White" BorderBrush="#FF2C3E50" BorderThickness="1" Template="{DynamicResource btnClickStyle}" Click="btnOpenLogFile_Click"/>
         <Label x:Name="label_Test" Content="TEST" HorizontalAlignment="Center" Margin="576,655,360,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="18" Foreground="White" Width="344"/>
         <Image x:Name="batt_icon_warning" HorizontalAlignment="Left" Height="145" Margin="1127,458,0,0" VerticalAlignment="Top" Width="135" Source="Resources/battery2warning.png" Stretch="Fill"/>
         <Label x:Name="label_batt" Content="100%" HorizontalAlignment="Center" Margin="1161,613,50,0" VerticalAlignment="Top" FontFamily="Avenir Next LT Pro" FontWeight="Bold" FontSize="13.333" Foreground="#FF2D3E50" Width="69" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
@@ -271,5 +271,9 @@
         <Button x:Name="btnLanding" Content="LANDING" HorizontalAlignment="Left" Margin="1159,229,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnLanding_Click"/>
         <Button x:Name="btnTakeOff" Content="TAKE OFF" HorizontalAlignment="Left" Margin="1159,274,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnTakeOff_Click"/>
         <Button x:Name="btnWaypoint" Content="WAYPOINT" HorizontalAlignment="Left" Margin="1159,316,0,0" VerticalAlignment="Top" Width="75" Background="#FFE74C3C" FontFamily="Roboto" FontWeight="Bold" Foreground="White" BorderBrush="#FFECF1F1" Template="{DynamicResource btnClickStyle}" Click="btnWaypoint_Click"/>
+        <Image x:Name="image" HorizontalAlignment="Left" Height="67" Margin="21,49,0,0" VerticalAlignment="Top" Width="538" Source="Resources/LOGO_TEXT_PUTIH.png"/>
+        <Image x:Name="image2" HorizontalAlignment="Left" Height="76" Margin="1159,36,0,0" VerticalAlignment="Top" Width="73" Source="Resources/logo-ugm.png"/>
+        <Image x:Name="image3" HorizontalAlignment="Left" Height="18" VerticalAlignment="Top" Width="18" Source="Resources/LogoGambarPutih.png" Margin="11,3,0,0"/>
+        <Image x:Name="image4" HorizontalAlignment="Left" Height="13" Margin="36,5,0,0" VerticalAlignment="Top" Width="188" Source="Resources/LOGO_TEXT_2_PUTIH.png"/>
     </Grid>
 </Window>
