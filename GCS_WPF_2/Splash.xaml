@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GCS_WPF_2"
         mc:Ignorable="d"
-        Title="Splash" Height="182" Width="350" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen">
+        Title="Splash" Height="182" Width="350" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="Resources/LogoGambarPutihIcon.ico">
     <Grid>
         <Image x:Name="image" HorizontalAlignment="Left" Height="182" VerticalAlignment="Top" Width="350" Source="Resources/splash.png"/>
 
