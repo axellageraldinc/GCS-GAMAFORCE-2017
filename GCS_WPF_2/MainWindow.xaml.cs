@@ -60,7 +60,7 @@ namespace GCS_WPF_2
 
         private static Location position = new Location(-7.778301, 110.374690);
         List<MapPolyline> listPolyline;
-        private static int zoom = 17, second=0, minute=0, hour=0, i=1;
+        private static int zoom = 17, second=0, minute=0, hour=0, waypointIndex=1;
         double x;
         private string TimeStart;
         private DateTime start, stop;
@@ -81,6 +81,7 @@ namespace GCS_WPF_2
         double YawLama = 0, PitchLama = 0, RollLama = 0;
 
         int statusUAV = 0;
+        int jumlahWaypoint = 0;
 
         #endregion
 
@@ -115,6 +116,7 @@ namespace GCS_WPF_2
                 // Add to view port
                 viewPort3d.Children.Add(device3D);
                 //Pitch3D(-90);
+                jumlahWaypoint = 1;
             }
             else
             {
@@ -123,6 +125,7 @@ namespace GCS_WPF_2
                 // Add to view port
                 viewPort3d.Children.Add(device3D);
                 //Pitch3D(-90);
+                jumlahWaypoint = 4;
             }
 
 
@@ -424,9 +427,10 @@ namespace GCS_WPF_2
                 //Ambil latitude dan longitude dari pushpin
                 double Latitude = pin.Location.Latitude;
                 double Longitude = pin.Location.Longitude;
-                if (i == 5)
+                //waypointIndex default value = 1
+                if (waypointIndex == jumlahWaypoint+1)
                 {
-                    MessageBox.Show("Silakan hapus terlebih dahulu waypoint yang ada. Maksimal hanya 4 waypoint!");
+                    MessageBox.Show("Silakan hapus terlebih dahulu waypoint yang ada. Maksimal hanya " + jumlahWaypoint +" waypoint!");
                     //i = 1;
                     ////myMap.Children.Clear();
                     //Image image = new Image();
@@ -434,8 +438,8 @@ namespace GCS_WPF_2
                 }
                 else
                 {
-                    lat[i - 1] = Latitude; lng[i - 1] = Longitude;
-                    AddCustomPin("pin.png", Latitude, Longitude, "Point ke-" + i);
+                    lat[waypointIndex - 1] = Latitude; lng[waypointIndex - 1] = Longitude;
+                    AddCustomPin("pin.png", Latitude, Longitude, "Point ke-" + waypointIndex);
                     //BoxTestSerial.Text = (string.Format("{0:0.000000}", Latitude) + "," + string.Format("{0:0.000000}", Longitude));
                     //Kirim latitude dan longitude ke controller
                     try
@@ -445,14 +449,25 @@ namespace GCS_WPF_2
                         //portGCS.Write(b, 0, 4);
                         //portGCS.Write("SEMPAK:");
                         //portGCS.Write("waypoint:");
-                        if (i == 4)
+                        if (waypointIndex == jumlahWaypoint)
                         {
-                            string datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}#{2:0.0000000}#{3:0.0000000}#{4:0.0000000}#{5:0.0000000}#{6:0.0000000}#{7:0.0000000}*",
+                            string datapoint = "";
+                            MessageBox.Show("Klik start untuk memulai waypoint");
+                            if (statusUAV == 0)
+                            {
+                                datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}*",
+                                new object[] { this.lat[0], this.lng[0] });
+                            }
+                            else
+                            {
+                                datapoint = string.Format("@20#{0:0.0000000}#{1:0.0000000}#{2:0.0000000}#{3:0.0000000}#{4:0.0000000}#{5:0.0000000}#{6:0.0000000}#{7:0.0000000}*",
                                 new object[] { this.lat[0], this.lng[0], this.lat[1], this.lng[1], this.lat[2], this.lng[2], this.lat[3], this.lng[3] });
-                            portGCS.Write(datapoint);
-                            Console.WriteLine(datapoint);
+                            }
+                            getDataWaypoint(datapoint);
+                            //portGCS.Write(datapoint);
+                            //Console.WriteLine(datapoint);
                         }
-                        i++;
+                        waypointIndex++;
                         string lat = string.Format("{0:0.000000}", Latitude);
                         //portGCS.Write(lat + ":");
                         string lng = string.Format("{0:0.000000}", Longitude);
@@ -735,6 +750,7 @@ namespace GCS_WPF_2
         #endregion
 
         #region PenerimaanDataDariDrone
+        #region Timer ra kanggo
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //::             Timer utk sinkronisasi transmisi data              :::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -759,7 +775,7 @@ namespace GCS_WPF_2
             //position = new Location(Convert.ToDouble(model1.Lat), Convert.ToDouble(model1.Lng));
             LoadMap();
         }
-
+        #endregion
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         //:: Pengolahan data, data yang diterima diolah dan ditampilkan ke UI::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1049,14 +1065,14 @@ namespace GCS_WPF_2
         {
             Image image = new Image();
             removePin(image, "waypointPin");
-            i = 1;
+            waypointIndex = 1;
         }
 
         private void myMap_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (i == 5)
+            if (waypointIndex == 5)
             {
-                i = 1;
+                waypointIndex = 1;
                 //myMap.Children.Clear();
                 Image image = new Image();
                 removePin(image, "waypointPin");
@@ -1273,9 +1289,17 @@ namespace GCS_WPF_2
             }
         }
 
+        String dataWaypoint = "";
+        private void getDataWaypoint(String datapoint)
+        {
+            dataWaypoint = datapoint;
+        }
+
         private void btnStartWaypoint_Click(object sender, RoutedEventArgs e)
         {
-            
+            portGCS.Write(dataWaypoint);
+            Console.WriteLine(dataWaypoint);
+            waypointIndex = 1;
             //portGCS.Write("startWaypoint:");
             //SendDataKeController("GCS_DB");
             //TrackRoute("GCS_DB");
@@ -1397,7 +1421,7 @@ namespace GCS_WPF_2
                 int n = 8;
                 string[] waypoint = BoxCommand.Text.Split(',');
                 string datapoint = "@20";
-                for (i=0; i<4; i++)
+                for (int i=0; i<4; i++)
                 {
                     datapoint = datapoint + "#" +waypoint[i];
                 }
