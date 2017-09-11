@@ -1193,11 +1193,11 @@ namespace GCS_WPF_2
             Uri uri;
             if (statusUAV == 1)
             {
-                uri = new Uri("/Resources/Quad-Selected.png", UriKind.Relative);
+                uri = new Uri("/Resources/drone.png", UriKind.Relative);
             }
             else
             {
-                uri = new Uri("/Resources/FW-Selected.png", UriKind.Relative);
+                uri = new Uri("/Resources/aeroplane.png", UriKind.Relative);
             }
             myBitmapImage.BeginInit();
             myBitmapImage.UriSource = uri;
