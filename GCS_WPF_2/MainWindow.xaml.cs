@@ -625,7 +625,7 @@ namespace GCS_WPF_2
         {
             if (btnConnect.Content.Equals("CONNECT"))
             {
-                PlotGraphic();
+                //PlotGraphic();
                 ConnectPortBaudAttempt();
                 btnConnect.Content = "STOP";
                 //Mulai Timer
@@ -863,18 +863,19 @@ namespace GCS_WPF_2
                     db.InsertData2(TimeStart, data[1], data[2], data[3], data[4], data[5], data[6], time);
 
                     txtAlt.Content = data[1];
-                    altitude = Convert.ToDouble(data[1]);
+                    //altitude = Convert.ToDouble(data[1]);
+                    altitude = float.Parse(data[1], CultureInfo.InvariantCulture.NumberFormat);
                     txtYaw.Content = data[2];
                     YawBaru = Convert.ToDouble(data[2]);
-                    Yaw3D(YawBaru-YawLama);
+                    //Yaw3D(YawBaru-YawLama);
                     YawLama = YawBaru;
                     txtPitch.Content = data[3];
                     PitchBaru = Convert.ToDouble(data[3]);
-                    Pitch3D(PitchBaru-PitchLama);
+                    //Pitch3D(PitchBaru-PitchLama);
                     PitchLama = PitchBaru;
                     txtRoll.Content = data[4];
                     RollBaru = Convert.ToDouble(data[4]);
-                    Roll3D(RollBaru-RollLama);
+                    //Roll3D(RollBaru-RollLama);
                     RollLama = RollBaru;
                     txtLat.Content = data[5];
                     txtLng.Content = data[6];
