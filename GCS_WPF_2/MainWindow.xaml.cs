@@ -141,7 +141,7 @@ namespace GCS_WPF_2
             PopulateComboBoxRecord();
             //Map dibuat focus supaya bisa di double click
             myMap.Focus();
-            myMap.Mode = new AerialMode(true);
+            myMap.Mode = new RoadMode();
             //db = new DBHelper();
             listPolyline = new List<MapPolyline>();
             //db.OpenConnection();
@@ -863,7 +863,8 @@ namespace GCS_WPF_2
                     db.InsertData2(TimeStart, data[1], data[2], data[3], data[4], data[5], data[6], time);
 
                     txtAlt.Content = data[1];
-                    altitude = Convert.ToDouble(data[1]);
+                    //altitude = Convert.ToDouble(data[1]);
+                    altitude = float.Parse(data[1], CultureInfo.InvariantCulture.NumberFormat);
                     txtYaw.Content = data[2];
                     YawBaru = Convert.ToDouble(data[2]);
                     Yaw3D(YawBaru-YawLama);
@@ -878,6 +879,7 @@ namespace GCS_WPF_2
                     RollLama = RollBaru;
                     txtLat.Content = data[5];
                     txtLng.Content = data[6];
+                    Console.WriteLine(data[0]);
                     Console.WriteLine(data[1]);
                     Console.WriteLine(data[2]);
                     Console.WriteLine(data[3]);
